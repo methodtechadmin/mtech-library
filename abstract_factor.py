@@ -1,7 +1,8 @@
 
 from abc import ABC, abstractmethod
-from mtech import Region,DateTime,CorporateActions,Universe,DateUtils,MarketData,constants as cns,columns as col
+from mtech import Region,DateTime,CorporateActions,CorporateData,Universe,DateUtils,MarketData,constants as cns,columns as col
 import pandas as pd
+from mtech.enums import UniverseType, FinancialReportType, FinancialReportMetric,FinancialReportPeriod
 
 class AbstractFactor(ABC):
 
@@ -18,7 +19,7 @@ class SampleFactor(AbstractFactor):
         super().__init__(region)
 
     def compute(self, date: DateTime) -> pd.DataFrame:
-        univ = Universe(self._region).get_universe(univ_type="nifty",date=date)
+        univ = Universe(self._region).get_universe(univ_type=UniverseType.NIFTY,date=date)
         ukeys = univ[col.MSYMBOL_UKEY].tolist()
 
         df_21 = MarketData().get_adjusted_price(
