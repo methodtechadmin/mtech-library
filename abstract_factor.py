@@ -1,6 +1,6 @@
 
 from abc import ABC, abstractmethod
-from mtech import Region,DateTime,CorporateActions,CorporateData,Universe,DateUtils,MarketData,constants as cns,columns as col
+from mtech import Region,DateTime,CorporateActions,CorporateData,Universe,DateUtils,MarketData,constants as cns,columns as col, SecurityInfo
 import pandas as pd
 from mtech.enums import UniverseType, FinancialReportType, FinancialReportMetric,FinancialReportPeriod
 import boto3
@@ -31,6 +31,19 @@ class AbstractFactor(ABC):
                 print(f"Skipping {date} (empty df)")
                 continue
 
+            ukey_exch_sym_map = SecurityInfo().get_sec_data(as_on_date=date, ukeys=df[col.MSYMBOL_UKEY].unique().tolist())[[col.MSYMBOL_UKEY, col.EXCHANGE_SYMBOL]]
+            df = df.merge(
+                ukey_exch_sym_map,
+                on=col.MSYMBOL_UKEY,
+                how="left"
+            )
+                df = df.rename(columns={
+                col.DATETIME: "Date",
+                col.EXCHANGE_SYMBOL: "ExchangeSymbol",
+                col.SCORE: "Alpha"
+            })
+
+            df = df[["Date", "ExchangeSymbol", "Alpha"]]
             buffer = io.BytesIO()
 
             df.to_csv(buffer, index=False)
