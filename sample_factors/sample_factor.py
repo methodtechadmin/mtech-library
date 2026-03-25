@@ -1,8 +1,21 @@
-
 from abstract_factor import AbstractFactor
-from mtech import Region,DateTime,CorporateActions,CorporateData,Universe,DateUtils,MarketData,constants as cns,columns as col
+
+from mtech import Region
+from mtech import DateTime
+from mtech import CorporateActions
+from mtech import CorporateData
+from mtech import Universe
+from mtech import DateUtils
+from mtech import MarketData
+from mtech import constants as cns
+from mtech import columns as col
+
 import pandas as pd
-from mtech.enums import UniverseType, FinancialReportType, FinancialReportMetric,FinancialReportPeriod
+
+from mtech.enums import UniverseType
+from mtech.enums import FinancialReportType
+from mtech.enums import FinancialReportMetric
+from mtech.enums import FinancialReportPeriod
 
 class SampleFactor(AbstractFactor):
 
@@ -27,7 +40,6 @@ class SampleFactor(AbstractFactor):
             univ.merge(df_21, on=col.MSYMBOL_UKEY)
                 .merge(df_252, on=col.MSYMBOL_UKEY)
         )
-        print(df)
 
         df[col.SCORE] = df["price_21"]/df["price_252"] - 1
 
@@ -38,7 +50,7 @@ class SampleFactor(AbstractFactor):
 
 if __name__ == "__main__":
     factor = SampleFactor(Region("IN"))
-    print(factor)
-    print(factor.compute(DateTime("20200101")))
+    df = factor.compute(DateTime("20200101"))
+    print(df)
 
     factor.backfill(DateTime("20200101"),DateTime("20200105"))
