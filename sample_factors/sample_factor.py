@@ -38,4 +38,7 @@ class SampleFactor(AbstractFactor):
 
 if __name__ == "__main__":
     factor = SampleFactor(Region("IN"))
+    print(factor)
     print(factor.compute(DateTime("20200101")))
+
+    factor.backfill(DateTime("20200101"),DateTime("20200105"))
