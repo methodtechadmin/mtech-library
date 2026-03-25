@@ -1,11 +1,27 @@
-
 from abc import ABC, abstractmethod
-from mtech import Region,DateTime,CorporateActions,CorporateData,Universe,DateUtils,MarketData,constants as cns,columns as col, SecurityInfo
+
+from mtech import Region
+from mtech import DateTime
+from mtech import CorporateActions
+from mtech import CorporateData
+from mtech import Universe
+from mtech import DateUtils
+from mtech import MarketData
+from mtech import constants as cns
+from mtech import columns as col
+from mtech import SecurityInfo
+
 import pandas as pd
-from mtech.enums import UniverseType, FinancialReportType, FinancialReportMetric,FinancialReportPeriod
+
+from mtech.enums import UniverseType
+from mtech.enums import FinancialReportType
+from mtech.enums import FinancialReportMetric
+from mtech.enums import FinancialReportPeriod
+
 import boto3
 import os
 import io
+
 
 class AbstractFactor(ABC):
 
