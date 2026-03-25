@@ -37,7 +37,7 @@ class AbstractFactor(ABC):
                 on=col.MSYMBOL_UKEY,
                 how="left"
             )
-                df = df.rename(columns={
+            df = df.rename(columns={
                 col.DATETIME: "Date",
                 col.EXCHANGE_SYMBOL: "ExchangeSymbol",
                 col.SCORE: "Alpha"
