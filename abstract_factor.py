@@ -44,4 +44,18 @@ class AbstractFactor(ABC):
 
             print(f"Uploaded: s3://{BUCKET}/{key}")
                 
-        
+        meta_content = f"""ALPHA_KEY = {CLASS_NAME}
+        ALPHA_DESCRIPTION = From Code editor
+        START_DATE = {sdate}
+        END_DATE = {edate}
+        """
+
+        meta_key = f"{USER_ID}/meta_data/{CLASS_NAME}/meta.txt"
+
+        s3.put_object(
+            Bucket=BUCKET,
+            Key=meta_key,
+            Body=meta_content.encode("utf-8")
+        )
+
+        print(f"Metadata uploaded: s3://{BUCKET}/{meta_key}")
