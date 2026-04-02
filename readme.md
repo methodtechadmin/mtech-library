@@ -27,8 +27,22 @@ A Python client library for accessing market data, corporate actions, corporate 
 Import the classes you need:
 
 ```python
-from mtech import MarketData, CorporateActions, CorporateData, SecurityInfo, Universe, DateTime, DateUtils, Region, constants as cns, columns as col
-from mtech import VOLUME_TYPE, FinancialReportType, FinancialReportPeriod, FinancialReportMetric, FinancialType, UniverseType
+from mtech import MarketData
+from mtech import CorporateActions
+from mtech import CorporateData
+from mtech import SecurityInfo
+from mtech import Universe
+from mtech import DateTime
+from mtech import DateUtils
+from mtech import Region
+from mtech import constants as cns
+from mtech import columns as col
+from mtech.enums import VOLUME_TYPE
+from mtech.enums import FinancialReportType
+from mtech.enums import FinancialReportPeriod
+from mtech.enums import FinancialReportMetric
+from mtech.enums import FinancialType
+from mtech.enums import UniverseType
 ```
 
 ---
@@ -55,7 +69,11 @@ from mtech import VOLUME_TYPE, FinancialReportType, FinancialReportPeriod, Finan
 All data methods require `ukeys` — unique integer keys that identify securities. The standard way to obtain them is to initialise a universe for a date and extract the keys from it. Everything else follows from there.
 
 ```python
-from mtech import Universe, DateTime, Region, UniverseType, columns as col
+from mtech import Universe
+from mtech import DateTime
+from mtech import Region
+from mtech import columns as col
+from mtech.enums import UniverseType
 
 # 1. Define your date and region
 sdate = DateTime("20240101")
@@ -291,7 +309,11 @@ du.get_dt_obj_with_filler("", default_date="20240101")
 Manage and retrieve security universes scoped to a `Region`.
 
 ```python
-from mtech import Universe, Region, DateTime, UniverseType, columns as col
+from mtech import Universe
+from mtech import Region
+from mtech import DateTime
+from mtech import columns as col
+from mtech.enums import UniverseType
 
 region = Region("IN")
 sdate  = DateTime("20240101")
@@ -367,7 +389,13 @@ universe_map = Universe(region).get_universe_map()
 Fetch price, volume, return, and market cap data for securities.
 
 ```python
-from mtech import MarketData, Universe, DateTime, Region, UniverseType, columns as col
+from mtech import MarketData
+from mtech import Universe
+from mtech import DateTime
+from mtech import Region
+from mtech import columns as col
+from mtech.enums import UniverseType
+from mtech.enums import VOLUME_TYPE
 
 region = Region("IN")
 sdate  = DateTime("20240101")
@@ -540,7 +568,12 @@ df = md.get_cumulative_daily_returns(
 Fetch data on stock splits, bonuses, and dividends.
 
 ```python
-from mtech import CorporateActions, Universe, DateTime, Region, UniverseType, columns as col
+from mtech import CorporateActions
+from mtech import Universe
+from mtech import DateTime
+from mtech import Region
+from mtech import columns as col
+from mtech.enums import UniverseType
 
 region = Region("IN")
 sdate  = DateTime("20240101")
@@ -615,8 +648,15 @@ df = ca.get_dividends_data(
 Access financial statement metrics and shareholding data.
 
 ```python
-from mtech import CorporateData, Universe, DateTime, Region, UniverseType, columns as col
-from mtech import FinancialReportType, FinancialReportPeriod, FinancialReportMetric
+from mtech import CorporateData
+from mtech import Universe
+from mtech import DateTime
+from mtech import Region
+from mtech import columns as col
+from mtech.enums import UniverseType
+from mtech.enums import FinancialReportType
+from mtech.enums import FinancialReportPeriod
+from mtech.enums import FinancialReportMetric
 
 region = Region("IN")
 sdate  = DateTime("20240101")
@@ -728,7 +768,13 @@ df = cd.get_share_holding_aggregate_data_for_periods(
 Look up securities, map identifiers, and retrieve metadata.
 
 ```python
-from mtech import SecurityInfo, Universe, DateTime, Region, UniverseType, columns as col
+from mtech import SecurityInfo
+from mtech import Universe
+from mtech import DateTime
+from mtech import Region
+from mtech import columns as col
+from mtech.enums import UniverseType
+from mtech.enums import FinancialType
 
 region = Region("IN")
 sdate  = DateTime("20240101")
@@ -934,7 +980,8 @@ df = si.get_margin_pct(
 Two pre-instantiated objects expose defined constants and standard column names as attributes.
 
 ```python
-from mtech import constants as cns, columns as col
+from mtech import constants as cns
+from mtech import columns as col
 
 print(cns.IST_TZ)  # "Asia/Kolkata"
 print(col.UKEY)    # "ukey"
@@ -947,10 +994,15 @@ These are loaded automatically on import.
 
 ## Enums
 
-Enum types are used as typed parameters across several classes. Import them from `mtech`:
+Enum types are used as typed parameters across several classes. Import them from `mtech.enums`:
 
 ```python
-from mtech import VOLUME_TYPE, FinancialReportType, FinancialReportPeriod, FinancialReportMetric, FinancialType, UniverseType
+from mtech.enums import VOLUME_TYPE
+from mtech.enums import FinancialReportType
+from mtech.enums import FinancialReportPeriod
+from mtech.enums import FinancialReportMetric
+from mtech.enums import FinancialType
+from mtech.enums import UniverseType
 ```
 
 ### `VOLUME_TYPE`
