@@ -84,8 +84,7 @@ class AbstractFactor(ABC):
 
     def backfill(self, sdate: DateTime, edate: DateTime):
         dates = DateUtils().get_busdate_range(sdate, edate)
-
-        # parallel execution
+        
         loop_parallel(
             iter_list=dates,
             func=partial(self._process_single_date),
@@ -93,7 +92,6 @@ class AbstractFactor(ABC):
             use_threads=True,
         )
 
-        # metadata upload (do once, not parallel)
         s3 = boto3.client('s3')
         USER_ID = os.environ.get('USER_ID')
         BUCKET = os.environ.get('S3_BUCKET')
