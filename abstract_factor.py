@@ -18,6 +18,8 @@ from mtech.enums import FinancialReportType
 from mtech.enums import FinancialReportMetric
 from mtech.enums import FinancialReportPeriod
 
+from mtech.ParallelUtils import loop_parallel
+
 import boto3
 import os
 import io
