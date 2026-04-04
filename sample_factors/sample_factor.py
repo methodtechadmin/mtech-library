@@ -23,29 +23,43 @@ class SampleFactor(AbstractFactor):
         super().__init__(region)
 
     def compute(self, date: DateTime) -> pd.DataFrame:
-        univ = Universe(self._region).get_universe(univ_type=UniverseType.NIFTY,date=date)
+        
+        omit_days = cns.DAYS_IN_WEEK
+        lookback_days = 3 * cns.DAYS_IN_MONTH 
+
+        edate = DateUtils().shift_busdate(date, self._region, -omit_days)
+        sdate = DateUtils().shift_busdate(date, self._region, -lookback_days)
+
+        # universe
+        univ = Universe(self._region).get_universe(
+            univ_type=UniverseType.NIFTY,
+            date=date
+        )
         ukeys = univ[col.MSYMBOL_UKEY].tolist()
 
-        df_21 = MarketData().get_adjusted_price(
-            date_times=[DateUtils().shift_busdate(date, self._region, -cns.DAYS_IN_MONTH)],
+        # prices
+        df_edate = MarketData().get_adjusted_price(
+            date_times=[edate],
             ukeys=ukeys
-        )[[col.MSYMBOL_UKEY, col.CLOSE_PRICE]].rename(columns={col.CLOSE_PRICE: "price_21"})
+        )[[col.MSYMBOL_UKEY, col.CLOSE_PRICE]] \
+         .rename(columns={col.CLOSE_PRICE: "price_edate"})
 
-        df_252 = MarketData().get_adjusted_price(
-            date_times=[DateUtils().shift_busdate(date, self._region, -cns.DAYS_IN_YEAR)],
+        df_sdate = MarketData().get_adjusted_price(
+            date_times=[sdate],
             ukeys=ukeys
-        )[[col.MSYMBOL_UKEY, col.CLOSE_PRICE]].rename(columns={col.CLOSE_PRICE: "price_252"})
+        )[[col.MSYMBOL_UKEY, col.CLOSE_PRICE]] \
+         .rename(columns={col.CLOSE_PRICE: "price_sdate"})
 
+        # merge
         df = (
-            univ.merge(df_21, on=col.MSYMBOL_UKEY)
-                .merge(df_252, on=col.MSYMBOL_UKEY)
+            univ
+            .merge(df_edate, on=col.MSYMBOL_UKEY, how="inner")
+            .merge(df_sdate, on=col.MSYMBOL_UKEY, how="inner")
         )
 
-        df[col.SCORE] = df["price_21"]/df["price_252"] - 1
+        df[col.SCORE] = df["price_edate"] / df["price_sdate"] - 1
 
-        df = df[[col.DATETIME,col.MSYMBOL_UKEY,col.SCORE]]
-
-        return df
+        return df[[col.DATETIME, col.MSYMBOL_UKEY, col.SCORE]]
 
 
 if __name__ == "__main__":
