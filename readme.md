@@ -1,6 +1,6 @@
-# Market Data SDK
+# mtech Library
 
-A Python client library for accessing market data, corporate actions, corporate financials, security information, universe management, and date utilities — all via a REST API backend.
+Library for accessing market data, corporate actions, corporate financials, security information, universe management, and other utilities.
 
 ---
 
