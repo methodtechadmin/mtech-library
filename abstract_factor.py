@@ -20,6 +20,8 @@ from mtech.enums import FinancialReportPeriod
 
 from mtech.ParallelUtils import loop_parallel
 
+from functools import partial
+
 import boto3
 import os
 import io
