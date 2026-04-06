@@ -84,7 +84,7 @@ class AbstractFactor(ABC):
 
     def backfill(self, sdate: DateTime, edate: DateTime):
         dates = DateUtils().get_busdate_range(sdate, edate)
-        
+
         loop_parallel(
             iter_list=dates,
             func=partial(self._process_single_date),
@@ -101,6 +101,7 @@ class AbstractFactor(ABC):
     ALPHA_DESCRIPTION = From Code editor
     START_DATE = {sdate}
     END_DATE = {edate}
+    PRODUCTION_UPLOADED = FALSE
     """
 
         meta_key = f"{USER_ID}/meta_data/{CLASS_NAME}/meta.txt"
