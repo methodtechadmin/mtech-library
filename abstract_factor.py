@@ -57,6 +57,9 @@ class AbstractFactor(ABC):
             ukeys=df[col.MSYMBOL_UKEY].unique().tolist()
         )[[col.MSYMBOL_UKEY, col.EXCHANGE_SYMBOL]]
 
+        df[col.MSYMBOL_UKEY] = pd.to_numeric(df[col.MSYMBOL_UKEY], errors="coerce")
+        ukey_exch_sym_map[col.MSYMBOL_UKEY] = pd.to_numeric(ukey_exch_sym_map[col.MSYMBOL_UKEY], errors="coerce")
+        
         df = df.merge(
             ukey_exch_sym_map,
             on=col.MSYMBOL_UKEY,
