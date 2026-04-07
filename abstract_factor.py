@@ -83,8 +83,8 @@ class AbstractFactor(ABC):
         print(f"Uploaded: s3://{BUCKET}/{key}")
 
     def backfill(self, sdate: DateTime, edate: DateTime):
-        dates = DateUtils().get_busdate_range(sdate, edate)
-
+        dates = DateUtils().get_busdate_range(sdate, edate, self._region)
+        print(dates)
         loop_parallel(
             iter_list=dates,
             func=partial(self._process_single_date),
