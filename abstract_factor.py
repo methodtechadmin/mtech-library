@@ -59,7 +59,7 @@ class AbstractFactor(ABC):
 
         df[col.MSYMBOL_UKEY] = pd.to_numeric(df[col.MSYMBOL_UKEY], errors="coerce")
         ukey_exch_sym_map[col.MSYMBOL_UKEY] = pd.to_numeric(ukey_exch_sym_map[col.MSYMBOL_UKEY], errors="coerce")
-        
+
         df = df.merge(
             ukey_exch_sym_map,
             on=col.MSYMBOL_UKEY,
@@ -87,7 +87,7 @@ class AbstractFactor(ABC):
 
     def backfill(self, sdate: DateTime, edate: DateTime):
         dates = DateUtils().get_busdate_range(sdate, edate, self._region)
-        print(dates)
+
         loop_parallel(
             iter_list=dates,
             func=partial(self._process_single_date),
