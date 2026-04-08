@@ -57,8 +57,6 @@ class AbstractFactor(ABC):
         df = df[["Date", "ExchangeSymbol", "Alpha"]]
 
         date_str = str(date)
-        dir_path = os.path.join("temp", class_name)
-        os.makedirs(dir_path, exist_ok=True)
 
         file_path = os.path.join(dir_path, f"{date_str}.csv")
         df.to_csv(file_path, index=False)
@@ -73,9 +71,12 @@ class AbstractFactor(ABC):
         BUCKET = os.environ.get('S3_BUCKET')
         CLASS_NAME = self.__class__.__name__
 
+        dir_path = os.path.join("temp", CLASS_NAME)
+        os.makedirs(dir_path, exist_ok=True)
+
         loop_parallel(
             iter_list=dates,
-            func=partial(self._process_single_date, class_name = CLASS_NAME),
+            func=partial(self._process_single_date, class_name = CLASS_NAME, dir_path=dir_path),
             processes=cpu_count(),
             use_threads=False,
         )
