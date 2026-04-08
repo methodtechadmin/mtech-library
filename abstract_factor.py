@@ -124,3 +124,6 @@ class AbstractFactor(ABC):
         )
 
         print(f"Metadata uploaded: s3://{BUCKET}/{meta_key}")
+
+        shutil.rmtree(dir_path)  
+        os.remove(zip_file_path)
