@@ -36,9 +36,7 @@ class AbstractFactor(ABC):
     def compute(self, date: DateTime) -> float:
         pass
 
-    def _process_single_date(self, date):
-        CLASS_NAME = self.__class__.__name__
-
+    def _process_single_date(self, date, class_name):
         df = self.compute(date)
 
         if df is None or df.empty:
@@ -68,7 +66,7 @@ class AbstractFactor(ABC):
         df = df[["Date", "ExchangeSymbol", "Alpha"]]
 
         date_str = str(date)
-        dir_path = os.path.join("temp", CLASS_NAME)
+        dir_path = os.path.join("temp", class_name)
         os.makedirs(dir_path, exist_ok=True)
 
         file_path = os.path.join(dir_path, f"{date_str}.csv")
@@ -89,7 +87,7 @@ class AbstractFactor(ABC):
 
         loop_parallel(
             iter_list=dates,
-            func=partial(self._process_single_date),
+            func=partial(self._process_single_date, class_name = CLASS_NAME),
             processes=cpu_count(),
             use_threads=False,
         )
