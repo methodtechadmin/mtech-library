@@ -85,8 +85,51 @@ class AbstractFactor(ABC):
 
         print(f"Uploaded: s3://{BUCKET}/{key}")
 
-    def backfill(self, sdate: DateTime, edate: DateTime):
+    def backfill(self, sdate: DateTime, edate: DateTime, force_query: bool = True):
         dates = DateUtils().get_busdate_range(sdate, edate, self._region)
+
+        s3 = boto3.client('s3')
+        USER_ID = os.environ.get('USER_ID')
+        BUCKET = os.environ.get('S3_BUCKET')
+        CLASS_NAME = self.__class__.__name__
+
+        prefix = f"{USER_ID}/data/{CLASS_NAME}/"
+
+        if force_query == False:
+            existing_dates = set()
+            continuation_token = None
+
+            while True:
+                params = {
+                    "Bucket": BUCKET,
+                    "Prefix": prefix
+                }
+
+                if continuation_token:
+                    params["ContinuationToken"] = continuation_token
+
+                response = s3.list_objects_v2(**params)
+
+                for obj in response.get("Contents", []):
+                    key = obj["Key"]
+                    filename = key.split("/")[-1]
+                    date_str = filename.replace(".csv", "")
+
+                    existing_dates.add(DateTime(date_str))
+
+                continuation_token = response.get("NextContinuationToken")
+                if not continuation_token:
+                    break
+
+            original_count = len(dates)
+
+            dates = [d for d in dates if d not in existing_dates]
+
+            skipped = original_count - len(dates)
+            print(f"Skipping {skipped} dates, processing {len(dates)} dates")
+
+        else:
+            print(f"Force query enabled → processing all {len(dates)} dates")
 
         loop_parallel(
             iter_list=dates,
@@ -94,11 +137,6 @@ class AbstractFactor(ABC):
             processes=cpu_count(),   
             use_threads=True,
         )
-
-        s3 = boto3.client('s3')
-        USER_ID = os.environ.get('USER_ID')
-        BUCKET = os.environ.get('S3_BUCKET')
-        CLASS_NAME = self.__class__.__name__
 
         meta_content = f"""ALPHA_KEY = {CLASS_NAME}
     ALPHA_DESCRIPTION = From Code editor
