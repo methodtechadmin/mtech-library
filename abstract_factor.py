@@ -37,13 +37,6 @@ class AbstractFactor(ABC):
         pass
 
     def _process_single_date(self, date):
-        import io
-        import boto3
-        import os
-
-        s3 = boto3.client('s3')
-        USER_ID = os.environ.get('USER_ID')
-        BUCKET = os.environ.get('S3_BUCKET')
         CLASS_NAME = self.__class__.__name__
 
         df = self.compute(date)
@@ -74,67 +67,52 @@ class AbstractFactor(ABC):
 
         df = df[["Date", "ExchangeSymbol", "Alpha"]]
 
-        buffer = io.BytesIO()
-        df.to_csv(buffer, index=False)
-        buffer.seek(0)
-
         date_str = str(date)
-        key = f"{USER_ID}/data/{CLASS_NAME}/{date_str}.csv"
+        dir_path = os.path.join("temp", CLASS_NAME)
+        os.makedirs(dir_path, exist_ok=True)
 
-        s3.upload_fileobj(buffer, BUCKET, key)
+        file_path = os.path.join(dir_path, f"{date_str}.csv")
+        df.to_csv(file_path, index=False)
 
-        print(f"Uploaded: s3://{BUCKET}/{key}")
+        print(f"Saved locally: {file_path}")
 
-    def backfill(self, sdate: DateTime, edate: DateTime, force_query: bool = True):
+
+    def backfill(self, sdate: DateTime, edate: DateTime):
         dates = DateUtils().get_busdate_range(sdate, edate, self._region)
 
-        s3 = boto3.client('s3')
         USER_ID = os.environ.get('USER_ID')
         BUCKET = os.environ.get('S3_BUCKET')
         CLASS_NAME = self.__class__.__name__
 
-        prefix = f"{USER_ID}/data/{CLASS_NAME}/"
-
-        if force_query == False:
-            existing_dates = set()
-            continuation_token = None
-
-            while True:
-                params = {
-                    "Bucket": BUCKET,
-                    "Prefix": prefix
-                }
-
-                if continuation_token:
-                    params["ContinuationToken"] = continuation_token
-
-                response = s3.list_objects_v2(**params)
-
-                for obj in response.get("Contents", []):
-                    key = obj["Key"]
-                    filename = key.split("/")[-1]
-                    date_str = filename.replace(".csv", "")
-
-                    existing_dates.add(DateTime(date_str))
-
-                continuation_token = response.get("NextContinuationToken")
-                if not continuation_token:
-                    break
-
-            dates = [d for d in dates if d not in existing_dates]
+        dir_path = os.path.join("temp", CLASS_NAME)
+        os.makedirs(dir_path, exist_ok=True)
 
         loop_parallel(
             iter_list=dates,
             func=partial(self._process_single_date),
-            processes=cpu_count(),   
-            use_threads=True,
+            processes=cpu_count(),
+            use_threads=False,
         )
+
+        zip_base_path = os.path.join("temp", CLASS_NAME)  # without .zip
+        zip_file_path = shutil.make_archive(zip_base_path, 'zip', dir_path)
+
+        print(f"Zipped files at: {zip_file_path}")
+
+        s3 = boto3.client('s3')
+        zip_key = f"{USER_ID}/data/{CLASS_NAME}/{CLASS_NAME}.zip"
+
+        with open(zip_file_path, "rb") as f:
+            s3.upload_fileobj(f, BUCKET, zip_key)
+
+        print(f"Uploaded zip: s3://{BUCKET}/{zip_key}")
 
         meta_content = f"""ALPHA_KEY = {CLASS_NAME}
     ALPHA_DESCRIPTION = From Code editor
     START_DATE = {sdate}
     END_DATE = {edate}
     PRODUCTION_UPLOADED = FALSE
+    PRODUCTION_FILE_NAME = {CLASS_NAME}.zip
     """
 
         meta_key = f"{USER_ID}/meta_data/{CLASS_NAME}/meta.txt"
