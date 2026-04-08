@@ -27,7 +27,7 @@ class AbstractFactor(ABC):
     def compute(self, date: DateTime) -> float:
         pass
 
-    def _process_single_date(self, date, class_name):
+    def _process_single_date(self, date, class_name, dir_path):
         df = self.compute(date)
 
         if df is None or df.empty:
