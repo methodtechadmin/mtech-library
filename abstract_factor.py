@@ -2,21 +2,12 @@ from abc import ABC, abstractmethod
 
 from mtech import Region
 from mtech import DateTime
-from mtech import CorporateActions
-from mtech import CorporateData
-from mtech import Universe
 from mtech import DateUtils
-from mtech import MarketData
 from mtech import constants as cns
 from mtech import columns as col
 from mtech import SecurityInfo
 
 import pandas as pd
-
-from mtech.enums import UniverseType
-from mtech.enums import FinancialReportType
-from mtech.enums import FinancialReportMetric
-from mtech.enums import FinancialReportPeriod
 
 from mtech.ParallelUtils import loop_parallel
 from multiprocessing import cpu_count
@@ -81,9 +72,6 @@ class AbstractFactor(ABC):
         USER_ID = os.environ.get('USER_ID')
         BUCKET = os.environ.get('S3_BUCKET')
         CLASS_NAME = self.__class__.__name__
-
-        dir_path = os.path.join("temp", CLASS_NAME)
-        os.makedirs(dir_path, exist_ok=True)
 
         loop_parallel(
             iter_list=dates,
