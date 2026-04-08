@@ -123,7 +123,6 @@ class AbstractFactor(ABC):
 
             dates = [d for d in dates if d not in existing_dates]
 
-        print(f"Processing {len(dates)} dates...")
         loop_parallel(
             iter_list=dates,
             func=partial(self._process_single_date),
