@@ -21,7 +21,7 @@ from mtech.enums import FinancialReportPeriod
 from mtech.ParallelUtils import loop_parallel
 from multiprocessing import cpu_count
 from functools import partial
-
+import shutil
 import boto3
 import os
 import io
