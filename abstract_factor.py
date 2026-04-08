@@ -2,17 +2,26 @@ from abc import ABC, abstractmethod
 
 from mtech import Region
 from mtech import DateTime
+from mtech import CorporateActions
+from mtech import CorporateData
+from mtech import Universe
 from mtech import DateUtils
+from mtech import MarketData
 from mtech import constants as cns
 from mtech import columns as col
 from mtech import SecurityInfo
 
 import pandas as pd
 
+from mtech.enums import UniverseType
+from mtech.enums import FinancialReportType
+from mtech.enums import FinancialReportMetric
+from mtech.enums import FinancialReportPeriod
+
 from mtech.ParallelUtils import loop_parallel
 from multiprocessing import cpu_count
 from functools import partial
-import shutil
+
 import boto3
 import os
 import io
@@ -27,7 +36,16 @@ class AbstractFactor(ABC):
     def compute(self, date: DateTime) -> float:
         pass
 
-    def _process_single_date(self, date, class_name, dir_path):
+    def _process_single_date(self, date):
+        import io
+        import boto3
+        import os
+
+        s3 = boto3.client('s3')
+        USER_ID = os.environ.get('USER_ID')
+        BUCKET = os.environ.get('S3_BUCKET')
+        CLASS_NAME = self.__class__.__name__
+
         df = self.compute(date)
 
         if df is None or df.empty:
@@ -56,50 +74,67 @@ class AbstractFactor(ABC):
 
         df = df[["Date", "ExchangeSymbol", "Alpha"]]
 
+        buffer = io.BytesIO()
+        df.to_csv(buffer, index=False)
+        buffer.seek(0)
+
         date_str = str(date)
+        key = f"{USER_ID}/data/{CLASS_NAME}/{date_str}.csv"
 
-        file_path = os.path.join(dir_path, f"{date_str}.csv")
-        df.to_csv(file_path, index=False)
+        s3.upload_fileobj(buffer, BUCKET, key)
 
-        print(f"Saved locally: {file_path}")
+        print(f"Uploaded: s3://{BUCKET}/{key}")
 
-
-    def backfill(self, sdate: DateTime, edate: DateTime):
+    def backfill(self, sdate: DateTime, edate: DateTime, force_query: bool = True):
         dates = DateUtils().get_busdate_range(sdate, edate, self._region)
 
+        s3 = boto3.client('s3')
         USER_ID = os.environ.get('USER_ID')
         BUCKET = os.environ.get('S3_BUCKET')
         CLASS_NAME = self.__class__.__name__
 
-        dir_path = os.path.join("temp", CLASS_NAME)
-        os.makedirs(dir_path, exist_ok=True)
+        prefix = f"{USER_ID}/data/{CLASS_NAME}/"
+
+        if force_query == False:
+            existing_dates = set()
+            continuation_token = None
+
+            while True:
+                params = {
+                    "Bucket": BUCKET,
+                    "Prefix": prefix
+                }
+
+                if continuation_token:
+                    params["ContinuationToken"] = continuation_token
+
+                response = s3.list_objects_v2(**params)
+
+                for obj in response.get("Contents", []):
+                    key = obj["Key"]
+                    filename = key.split("/")[-1]
+                    date_str = filename.replace(".csv", "")
+
+                    existing_dates.add(DateTime(date_str))
+
+                continuation_token = response.get("NextContinuationToken")
+                if not continuation_token:
+                    break
+
+            dates = [d for d in dates if d not in existing_dates]
 
         loop_parallel(
             iter_list=dates,
-            func=partial(self._process_single_date, class_name = CLASS_NAME, dir_path=dir_path),
-            processes=cpu_count(),
-            use_threads=False,
+            func=partial(self._process_single_date),
+            processes=cpu_count(),   
+            use_threads=True,
         )
-
-        zip_base_path = os.path.join("temp", CLASS_NAME)
-        zip_file_path = shutil.make_archive(zip_base_path, 'zip', dir_path)
-
-        print(f"Zipped files at: {zip_file_path}")
-
-        s3 = boto3.client('s3')
-        zip_key = f"{USER_ID}/data/{CLASS_NAME}/{CLASS_NAME}_{sdate}_{edate}.zip"
-
-        with open(zip_file_path, "rb") as f:
-            s3.upload_fileobj(f, BUCKET, zip_key)
-
-        print(f"Uploaded zip: s3://{BUCKET}/{zip_key}")
 
         meta_content = f"""ALPHA_KEY = {CLASS_NAME}
     ALPHA_DESCRIPTION = From Code editor
     START_DATE = {sdate}
     END_DATE = {edate}
     PRODUCTION_UPLOADED = FALSE
-    PRODUCTION_FILE_NAME = {CLASS_NAME}_{sdate}_{edate}.zip
     """
 
         meta_key = f"{USER_ID}/meta_data/{CLASS_NAME}/meta.txt"
@@ -111,6 +146,3 @@ class AbstractFactor(ABC):
         )
 
         print(f"Metadata uploaded: s3://{BUCKET}/{meta_key}")
-
-        shutil.rmtree(dir_path)  
-        os.remove(zip_file_path)
