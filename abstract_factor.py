@@ -94,13 +94,13 @@ class AbstractFactor(ABC):
             use_threads=False,
         )
 
-        zip_base_path = os.path.join("temp", CLASS_NAME)  # without .zip
+        zip_base_path = os.path.join("temp", CLASS_NAME)
         zip_file_path = shutil.make_archive(zip_base_path, 'zip', dir_path)
 
         print(f"Zipped files at: {zip_file_path}")
 
         s3 = boto3.client('s3')
-        zip_key = f"{USER_ID}/data/{CLASS_NAME}/{CLASS_NAME}.zip"
+        zip_key = f"{USER_ID}/data/{CLASS_NAME}/{CLASS_NAME}_{sdate}_{edate}.zip"
 
         with open(zip_file_path, "rb") as f:
             s3.upload_fileobj(f, BUCKET, zip_key)
@@ -112,7 +112,7 @@ class AbstractFactor(ABC):
     START_DATE = {sdate}
     END_DATE = {edate}
     PRODUCTION_UPLOADED = FALSE
-    PRODUCTION_FILE_NAME = {CLASS_NAME}.zip
+    PRODUCTION_FILE_NAME = {CLASS_NAME}_{sdate}_{edate}.zip
     """
 
         meta_key = f"{USER_ID}/meta_data/{CLASS_NAME}/meta.txt"
