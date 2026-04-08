@@ -121,16 +121,9 @@ class AbstractFactor(ABC):
                 if not continuation_token:
                     break
 
-            original_count = len(dates)
-
             dates = [d for d in dates if d not in existing_dates]
 
-            skipped = original_count - len(dates)
-            print(f"Skipping {skipped} dates, processing {len(dates)} dates")
-
-        else:
-            print(f"Force query enabled → processing all {len(dates)} dates")
-
+        print(f"Processing {len(dates)} dates...")
         loop_parallel(
             iter_list=dates,
             func=partial(self._process_single_date),
