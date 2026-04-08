@@ -127,7 +127,7 @@ class AbstractFactor(ABC):
             iter_list=dates,
             func=partial(self._process_single_date),
             processes=cpu_count(),   
-            use_threads=True,
+            use_threads=False,
         )
 
         meta_content = f"""ALPHA_KEY = {CLASS_NAME}
