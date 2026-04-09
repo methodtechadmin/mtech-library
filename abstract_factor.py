@@ -64,7 +64,7 @@ class AbstractFactor(ABC):
         print(f"Saved locally: {file_path}")
 
 
-    def backfill(self, sdate: DateTime, edate: DateTime):
+    def backfill(self, sdate: DateTime, edate: DateTime,force_query: bool = True):
         dates = DateUtils().get_busdate_range(sdate, edate, self._region)
 
         USER_ID = os.environ.get('USER_ID')
@@ -73,6 +73,22 @@ class AbstractFactor(ABC):
 
         dir_path = os.path.join("temp", CLASS_NAME)
         os.makedirs(dir_path, exist_ok=True)
+
+        if force_query == False:
+            existing_files = os.listdir(dir_path)
+
+            existing_dates = []
+            for file in existing_files:
+                if file.endswith(".csv"):
+                    date_str = file.replace(".csv", "")
+                    try:
+                        existing_dates.append(DateTime(date_str))
+                    except Exception:
+                        pass 
+
+            existing_dates_set = set(existing_dates)
+
+            dates = [d for d in dates if d not in existing_dates_set]
 
         loop_parallel(
             iter_list=dates,
