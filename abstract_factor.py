@@ -89,6 +89,8 @@ class AbstractFactor(ABC):
             existing_dates_set = set(existing_dates)
 
             dates = [d for d in dates if d not in existing_dates_set]
+        
+        print(len(dates))
 
         loop_parallel(
             iter_list=dates,
