@@ -96,6 +96,7 @@ class AbstractFactor(ABC):
             iter_list=dates,
             func=partial(self._process_single_date, class_name = CLASS_NAME, dir_path=dir_path),
             processes=cpu_count(),
+            max_tries = 3,
             use_threads=False,
         )
 
