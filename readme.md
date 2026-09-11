@@ -1069,7 +1069,7 @@ df = returns.forward_total_returns(
 
 #### `forward_residual_returns(date_times, horizon, risk_model, ukeys=None)`
 
-Compounds security-level residual returns from a risk model over the requested business days and horizon.
+Compounds security-level residual returns from the risk model over the requested business days and horizon.
 
 | Parameter | Type | Description |
 |---|---|---|
