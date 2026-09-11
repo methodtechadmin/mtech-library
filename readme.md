@@ -1,6 +1,6 @@
 # mtech Library
 
-Library for accessing market data, corporate actions, corporate financials, security information, universe management, and other utilities.
+Library for accessing market data, corporate actions, corporate financials, security information, universe management, return analytics, risk decomposition, and statistical utilities.
 
 ---
 
@@ -17,6 +17,9 @@ Library for accessing market data, corporate actions, corporate financials, secu
 - [CorporateActions](#corporateactions)
 - [CorporateData](#corporatedata)
 - [SecurityInfo](#securityinfo)
+- [Returns](#returns)
+- [RiskDecomposition](#riskdecomposition)
+- [StatHelpers](#stathelpers)
 - [Constants & Columns](#constants--columns)
 - [Enums](#enums)
 
@@ -35,6 +38,9 @@ from mtech import Universe
 from mtech import DateTime
 from mtech import DateUtils
 from mtech import Region
+from mtech import Returns
+from mtech import RiskDecomposition
+from mtech import StatHelpers
 from mtech import constants as cns
 from mtech import columns as col
 from mtech.enums import VOLUME_TYPE
@@ -59,6 +65,9 @@ from mtech.enums import UniverseType
 | `CorporateActions` | Splits, bonuses, dividends |
 | `CorporateData` | Financial statements, shareholding |
 | `SecurityInfo` | Security lookups, symbol/ISIN/ukey mapping |
+| `Returns` | Forward, daily, cumulative, and category returns |
+| `RiskDecomposition` | Risk-model data, portfolio risk, attribution, and event sensitivity |
+| `StatHelpers` | Winsorization, standardization, correlation, and regression helpers |
 | `constants` | Constant Variables |
 | `columns` | Column Variables |
 
@@ -66,7 +75,7 @@ from mtech.enums import UniverseType
 
 ## Quick Start
 
-All data methods require `ukeys` — unique integer keys that identify securities. The standard way to obtain them is to initialise a universe for a date and extract the keys from it. Everything else follows from there.
+Many security-level methods accept `ukeys` — unique integer keys that identify securities. The standard way to obtain them is to initialise a universe for a date and extract the keys from it. Everything else follows from there.
 
 ```python
 from mtech import Universe
@@ -84,7 +93,7 @@ univ  = Universe(region).get_universe(univ_type=UniverseType.NIFTY500, date=sdat
 ukeys = univ[col.MSYMBOL_UKEY].tolist()
 ```
 
-`ukeys` is now a plain Python list of integers that can be passed directly to any method in `MarketData`, `CorporateActions`, `CorporateData`, or `SecurityInfo`.
+`ukeys` is now a plain Python list of integers that can be passed to security-level methods in `MarketData`, `CorporateActions`, `CorporateData`, `SecurityInfo`, and `Returns`, or embedded in `RiskDecomposition` portfolio weight records.
 
 ---
 
@@ -328,7 +337,7 @@ ukeys = univ[col.MSYMBOL_UKEY].tolist()
 
 | Parameter | Type | Description |
 |---|---|---|
-| `univ_type` | `UniverseType` | Universe type e.g. `UniverseType.NIFTY500` |
+| `univ_type` | `UniverseType` | Universe type e.g. `UniverseType.NIFTY500, UniverseType.BSE500, UniverseType.NIFTY`  |
 | `date` | `DateTime` | Reference date |
 
 ```python
@@ -974,6 +983,373 @@ df = si.get_margin_pct(
 ```
 
 ---
+
+## Returns
+
+Compute forward, daily, cumulative, category-level returns.
+
+```python
+from mtech import Returns
+from mtech import DateTime
+from mtech import Region
+from mtech import Universe
+from mtech import columns as col
+from mtech import constants as cns
+from mtech.enums import UniverseType
+from mtech.enums import ReturnType
+from mtech.enums import ForwardReturnHorizon
+from mtech.enums import PortfolioWeights
+
+returns = Returns(Region("IN"))
+sdate = DateTime("20240101")
+edate = DateTime("20240630")
+
+univ = Universe(Region("IN")).get_universe(
+    univ_type=UniverseType.NIFTY500,
+    date=sdate,
+)
+ukeys = univ[col.MSYMBOL_UKEY].tolist()
+```
+
+### Constructor
+
+```python
+Returns(region: str, base_url: str = None)
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `region` | `Region` | Region code used for business-date calendars, e.g. `"IN"` |
+| `base_url` | `str` | Optional API base URL override |
+
+### Accepted Calculation Values
+
+`ReturnType` supports `"TOTAL"` and `"RESIDUAL"`. A `risk_model` must be supplied for residual returns.
+
+`horizon` supports ForwardReturnHorizon from enums:
+
+```textA
+ForwardReturnHorizon.FWD_1D,
+ForwardReturnHorizon.FWD_1D_2D,
+ForwardReturnHorizon.FWD_2D_3D,
+ForwardReturnHorizon.FWD_3D_5D,
+ForwardReturnHorizon.FWD_5D_21D,
+ForwardReturnHorizon.FWD_21D_63D,
+ForwardReturnHorizon.FWD_63D_126D,
+ForwardReturnHorizon.FWD_126D_252D,
+ForwardReturnHorizon.FWD_1D_21D,
+ForwardReturnHorizon.FWD_1D_63D,
+ForwardReturnHorizon.FWD_1D_126D,
+ForwardReturnHorizon.FWD_1D_252D,
+```
+
+### Methods
+
+#### `forward_total_returns(date_times, horizon, ukeys=None)`
+
+Compounds daily total returns over the requested forward business-day horizon.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `date_times` | `List[DateTime]` | Dates queried for forward return.  |
+| `horizon` | `ForwardReturnHorizon` | One of the supported forward-horizon values above |
+| `ukeys` | `List[int]` | Optional security filter; `None` or an empty list means no explicit ukey filter |
+
+```python
+df = returns.forward_total_returns(
+    date_times=[sdate],
+    horizon=ForwardReturnHorizon.FWD_5D_21D,
+    ukeys=ukeys,
+)
+# returns pd.DataFrame -> [col.DATETIME, col.HORIZON_START_DATE, col.HORIZON_END_DATE, col.MSYMBOL_UKEY, col.RETURN]
+
+```
+
+---
+
+#### `forward_residual_returns(date_times, horizon, risk_model, ukeys=None)`
+
+Compounds security-level residual returns from a risk model over the requested business days and horizon.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `date_times` | `List[DateTime]` | Dates queried for forward return. |
+| `horizon` | `ForwardReturnHorizon` | One of the supported forward-horizon values above |
+| `risk_model` | `str` | Risk model , e.g. `"INEC1"` |
+| `ukeys` | `List[int]` | Optional security filter |
+
+```python
+df = returns.forward_residual_returns(
+    date_times=[sdate],
+    horizon=ForwardReturnHorizon.FWD_5D_21D,
+    risk_model="INEC1",
+    ukeys=ukeys,
+)
+# returns pd.DataFrame -> [col.DATETIME, col.HORIZON_START_DATE, col.HORIZON_END_DATE, col.MSYMBOL_UKEY, col.RESIDUAL_RETURN]
+
+```
+
+---
+
+#### `daily_returns(date_times, return_type, ukeys=None, filter_for_fin_types=None, risk_model=None)`
+
+Returns daily total or residual returns.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `date_times` | `List[DateTime]` | Dates to query |
+| `return_type` | `ReturnType` | `ReturnType.TOTAL or ReturnType.RESIDUAL` |
+| `ukeys` | `List[int]` | Optional security filter |
+| `filter_for_fin_types` | `List[str]` | Optional financial-type filter, e.g. `[cns.COMMON_STOCK]` |
+| `risk_model` | `str` | Required when `return_type=ReturnType.RESIDUAL` |
+
+```python
+df = returns.daily_returns(
+    date_times=[sdate],
+    return_type= ReturnType.TOTAL,
+    ukeys=ukeys,
+    filter_for_fin_types = None,
+    risk_model="INEC1",
+)
+# returns pd.DataFrame -> [col.DATETIME, col.MSYMBOL_UKEY, col.RETURN]
+```
+
+---
+
+#### `cumulative_returns(start_date, end_date, return_type, ukeys=None, filter_for_fin_types=None, risk_model=None)`
+
+Compounds the available daily returns for each security across the business-date range using `prod(1 + return) - 1`.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `start_date` | `DateTime` | Start of the date range |
+| `end_date` | `DateTime` | End of the date range |
+| `return_type` | `ReturnType` | ``ReturnType.TOTAL or ReturnType.RESIDUAL`` |
+| `ukeys` | `List[int]` | Optional security filter |
+| `filter_for_fin_types` | `List[str]` | Optional financial-type filter |
+| `risk_model` | `str` | Required when `return_type="residual"` |
+
+```python
+df = returns.cumulative_returns(
+    start_date=sdate,
+    end_date=edate,
+    return_type=ReturnType.TOTAL,
+    ukeys=ukeys,
+)
+# returns pd.DataFrame -> [col.MSYMBOL_UKEY, col.RETURN]
+```
+
+---
+
+#### `category_cumulative_returns(start_date, end_date, return_type, category_col, weight_type, ukeys=None, filter_for_fin_types=None, risk_model=None)`
+
+Calculates daily weighted returns within a company-metadata category, compounds them over the date range, and maps each category result back to its securities.
+| Parameter | Type | Description |
+|---|---|---|
+| `start_date` | `DateTime` | Start of the date range |
+| `end_date` | `DateTime` | End of the date range |
+| `return_type` | `ReturnType` | `ReturnType.TOTAL` or `ReturnType.RESIDUAL` |
+| `category_col` | `str` | Company-metadata column used for grouping, e.g. `col.GICS_SECTOR` |
+| `weight_type` | `PortfolioWeights` | `PortfolioWeights.EQUAL` or `PortfolioWeights.MARKET_CAP` |
+| `ukeys` | `List[int]` | Optional security filter |
+| `filter_for_fin_types` | `List[str]` | Optional financial-type filter |
+| `risk_model` | `str` | Required when `return_type="residual"` |
+
+```python
+df = returns.category_cumulative_returns(
+    start_date=sdate,
+    end_date=edate,
+    return_type=ReturnType.TOTAL,
+    category_col=col.GICS_SECTOR,
+    weight_type=PortfolioWeights.MARKET_CAP,
+    ukeys=ukeys,
+)
+# returns pd.DataFrame -> [col.MSYMBOL_UKEY, col.GICS_SECTOR, col.RETURN]
+```
+
+---
+
+#### `returns_rsquared(date_times, return_type, ukeys=None, filter_for_fin_types=None, risk_model=None)`
+
+| Parameter | Type | Description |
+|---|---|---|
+| `date_times` | `List[DateTime]` | Dates used to construct the return path |
+| `return_type` | `ReturnType` | `ReturnType.TOTAL` or `ReturnType.RESIDUAL` |
+| `ukeys` | `List[int]` | Optional security filter |
+| `filter_for_fin_types` | `List[str]` | Optional financial-type filter |
+| `risk_model` | `str` | Required when `return_type="residual"` |
+
+```python
+df = returns.returns_rsquared(
+    date_times=[sdate],
+    return_type=ReturnType.TOTAL,
+    ukeys=ukeys,
+)
+# returns pd.DataFrame -> [col.MSYMBOL_UKEY, col.RSQUARED]
+```
+
+---
+
+## RiskDecomposition
+
+Access risk-model data and calculate portfolio exposures, volatility, variance contributions, model P&L, event sensitivity, and equal-risk weights.
+
+```python
+from mtech import RiskDecomposition
+from mtech import DateTime
+from mtech import columns as col
+
+risk = RiskDecomposition(model_name="INEC1")
+date = DateTime("20240131")
+univ = Universe(Region("IN")).get_universe(
+    univ_type=UniverseType.NIFTY500,
+    date=sdate,
+)
+ukeys = univ[col.MSYMBOL_UKEY].tolist()
+```
+
+The current implementation supports the `"INEC1"` model.
+
+### Constructor
+
+```python
+RiskDecomposition(model_name: str, base_url: str = None)
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `model_name` | `str` | Risk-model name, currently `"INEC1"` |
+| `base_url` | `str` | Optional API base URL override |
+
+Common date parameters use the following public types:
+
+| Parameter | Type | Description |
+|---|---|---|
+| `date_times` | `List[DateTime]` | One or more business dates |
+| `date` | `DateTime` | single business date |
+| `wide_format` | `bool` | Return matrix-like factor columns instead of long-form records (default: `False`) |
+
+### Model Data Methods
+
+All methods in this table return a `pd.DataFrame`.
+
+| Method | Description | Output |
+|---|---|---|
+| `get_universe(date_times)` | Get model securities and estimation-universe membership | `[col.DATETIME, col.MSYMBOL_UKEY, col.IN_ESTU]` |
+| `get_factor_map()` | Map each factor to its Market, Style, or Industry factor type | `[col.FACTOR_TYPE, col.FACTOR_NAME]` |
+| `get_factor_loadings(date_times, wide_format=False)` | Get security factor loadings; pivot to one column per factor when `wide_format=True` | Long form: `[col.DATETIME, col.FACTOR_NAME, col.IN_ESTU, col.MSYMBOL_UKEY, col.FACTOR_LOADING]` |
+| `get_factor_returns(date_times)` | Get daily factor returns and model-fit statistics | `[col.DATETIME, col.FACTOR_NAME, col.FACTOR_RETURN, col.TSTAT, col.RSQUARED, col.ADJ_RSQUARED]` |
+| `get_residual_returns(date_times)` | Get the security-level return unexplained by the model | `[col.DATETIME, col.MSYMBOL_UKEY, col.RETURN, col.FACTOR_RETURN, col.RESIDUAL_RETURN]` |
+| `get_factor_vol(date_times)` | Get annualized factor volatility | `[col.DATETIME, col.FACTOR_NAME, col.FACTOR_VOL]` |
+| `get_factor_covariance(date_times)` | Get factor covariance in long or matrix-like wide form | Long form: `[col.DATETIME, col.FACTOR_NAME_1, col.FACTOR_NAME_2, col.FACTOR_COVARIANCE]` |
+| `get_srisk(date_times)` | Get security-specific risk used as idiosyncratic volatility | `[col.DATETIME, col.MSYMBOL_UKEY, col.SRISK]` |
+| `get_trisk(date_times)` | Get security-level total risk | `[col.DATETIME, col.MSYMBOL_UKEY, col.TRISK]` |
+| `get_beta(date_times)` | Get security-level model beta | `[col.DATETIME, col.MSYMBOL_UKEY, col.BETA]` |
+
+`wide_format=True` produces:
+
+- factor loadings: `[col.DATETIME, col.MSYMBOL_UKEY, col.IN_ESTU, <one column per factor>]`
+- factor covariance: `[col.DATETIME, col.FACTOR_NAME_1, <one column per factor>]`
+
+```python
+factor_map = risk.get_factor_map()
+loadings = risk.get_factor_loadings(
+    date_times=[date],
+    wide_format=False,
+)
+covariance = risk.get_factor_covariance(
+    date_times=[date],
+    wide_format=True,
+)
+```
+
+### Portfolio Input
+
+Portfolio methods accept a DataFrame which has relevant columns. Each weight record requires `col.MSYMBOL_UKEY` and `col.WEIGHT`. Calls can be more optimized by using groupby_cols which allow unique portfolios to be analyzed at once. eg:- groupby_cols=[col.DATETIME,col.PORTFOLIO_TYPE]
+
+| Parameter | Type | Description |
+|---|---|---|
+| `date` | `DateTime` | Portfolio analysis date |
+| `weights` | `pd.DataFrame` | Security weight records |
+| `groupby_cols` | `List[str]` | Optional record fields used to calculate separate portfolios (default: `[]`) |
+| `aggregate` | `bool` | Aggregate factor exposures to portfolio/group level (default: `True`) |
+
+### Portfolio Exposure and Volatility Methods
+
+The output of each grouped calculation begins with the requested `groupby_cols`.
+
+| Method | Calculation | Output after `groupby_cols` |
+|---|---|---|
+| `get_portfolio_beta(date, weights, groupby_cols=[])` | Sum of `weight * beta` | `[col.BETA]` |
+| `get_portfolio_stock_level_beta(date, weights, groupby_cols=[])` | Per-security | `[col.MSYMBOL_UKEY, col.BETA_EXP]` |
+| `get_portfolio_factor_exposures(date, weights, groupby_cols=[], aggregate=True)` | Weighted factor loadings,  | `[col.FACTOR_NAME, col.FACTOR_EXPOSURE]` when aggregated |
+| `get_portfolio_factor_vol(date, weights, groupby_cols=[])` | Factor volatility, | `[col.FACTOR_VOL]` |
+| `get_portfolio_factor_group_vol(date, weights, groupby_cols=[])` | Separate Market, Style, and Industry factor-block volatility | `[col.MARKET_VOL, col.STYLE_VOL, col.INDUSTRY_VOL]` |
+| `get_portfolio_idio_vol(date, weights, groupby_cols=[])` | Idiosyncratic volatility, | `[col.IDIO_VOL]` |
+| `get_portfolio_total_vol(date, weights, groupby_cols=[])` | Factor, factor-group, idiosyncratic, and total volatility | `[col.FACTOR_VOL, col.MARKET_VOL, col.STYLE_VOL, col.INDUSTRY_VOL, col.IDIO_VOL, col.TOTAL_VOL]` |
+
+```python
+portfolio_risk = risk.get_portfolio_total_vol(
+    date=date,
+    weights=weights,
+    groupby_cols=[col.PORTFOLIO_TYPE],
+)
+# returns pd.DataFrame -> [col.PORTFOLIO_TYPE, col.FACTOR_VOL, col.MARKET_VOL,
+#                          col.STYLE_VOL, col.INDUSTRY_VOL,
+#                          col.IDIO_VOL, col.TOTAL_VOL]
+```
+
+### Variance Attribution and P&L Methods
+
+| Method | Description | Output after `groupby_cols` |
+|---|---|---|
+| `get_portfolio_marginal_idio_var_contribution(date, weights, groupby_cols=[])` | Per-security idiosyncratic variance and its share of group idiosyncratic variance | `[col.MSYMBOL_UKEY, col.WEIGHT, col.MARGINAL_IDIO_VAR, col.MARGINAL_IDIO_VAR_CONTRIB]` |
+| `get_portfolio_marginal_factor_var_contribution(date, weights, groupby_cols=[])` | Per-factor marginal variance and its share of total factor variance | `[col.FACTOR_NAME, col.MARGINAL_FACTOR_VAR, col.MARGINAL_FACTOR_VAR_CONTRIB]` |
+| `get_portfolio_marginal_stock_level_factor_var_contribution(date, weights, groupby_cols=[])` | Per-security, per-factor marginal factor variance | `[col.MSYMBOL_UKEY, col.FACTOR_NAME, col.MARGINAL_FACTOR_VAR]` |
+| `get_portfolio_marginal_total_var_contribution(date, weights, groupby_cols=[])` | Per-security factor-group, idiosyncratic, and total variance attribution | See the expanded schema below |
+| `get_portfolio_stock_level_risk_model_pnl(date, weights, groupby_cols=[])` | Same-date weighted residual and factor P&L, with factor P&L split by type | `[col.MSYMBOL_UKEY, col.RESIDUAL_PNL, col.FACTOR_PNL, col.MARKET_PNL, col.STYLE_PNL, col.INDUSTRY_PNL]` |
+
+`get_portfolio_marginal_total_var_contribution` returns:
+
+```text
+groupby_cols
++ [col.MSYMBOL_UKEY,
+   col.MARGINAL_FACTOR_VAR,   col.MARGINAL_FACTOR_VAR_CONTRIB,
+   col.MARGINAL_MARKET_VAR,   col.MARGINAL_MARKET_VAR_CONTRIB,
+   col.MARGINAL_STYLE_VAR,    col.MARGINAL_STYLE_VAR_CONTRIB,
+   col.MARGINAL_INDUSTRY_VAR, col.MARGINAL_INDUSTRY_VAR_CONTRIB,
+   col.MARGINAL_IDIO_VAR,     col.MARGINAL_IDIO_VAR_CONTRIB,
+   col.MARGINAL_TOTAL_VAR,    col.MARGINAL_TOTAL_VAR_CONTRIB]
+```
+
+```python
+contributions = risk.get_portfolio_marginal_total_var_contribution(
+    date=date,
+    weights=weights,
+    groupby_cols=groupby_cols,
+)
+```
+
+### Equal-Risk Portfolio
+
+#### `build_equal_risk_portfolio(date, ukeys, risk_type="total")`
+
+Builds a long-only, fully invested portfolio whose securities have approximately equal total-risk contributions.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `date` | `DateTime` | Portfolio construction date |
+| `ukeys` | `List[int]` | Candidate security keys |
+| `risk_type` | `str` | Risk objective; `"total"`|
+
+```python
+equal_risk_weights = risk.build_equal_risk_portfolio(
+    date=date,
+    ukeys=ukeys,
+    risk_type="total",
+)
+# returns pd.DataFrame -> [col.MSYMBOL_UKEY, col.WEIGHT]
+```
 
 ## Constants & Columns
 
