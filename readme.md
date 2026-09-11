@@ -1351,6 +1351,245 @@ equal_risk_weights = risk.build_equal_risk_portfolio(
 # returns pd.DataFrame -> [col.MSYMBOL_UKEY, col.WEIGHT]
 ```
 
+---
+
+## StatHelpers
+
+apply common statistical tools to help with data analysis on your scores: median absolute deviation, winsorization by percentile or by MAD, standardization, Spearman and Pearson correlation, and growth-rate regression.
+
+```python
+import pandas as pd
+
+from mtech import StatHelpers
+from mtech import DateTime
+from mtech import columns as col
+
+stats = StatHelpers()
+```
+
+Input DataFrames are serialized as records and returned transformations are reconstructed as new DataFrames. The caller's local DataFrame is therefore not modified by these API methods.
+
+### Constructor
+
+```python
+StatHelpers(base_url: str = None)
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `base_url` | `str` | Optional API base URL override |
+
+### Methods
+
+#### `median_absolute_deviation(data, col_to_winsorize, scale=1.4826)`
+
+Returns the scaled median absolute deviation:
+
+```text
+scale * median(abs(x - median(x)))
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `data` | `pd.DataFrame` | Input records |
+| `col_to_winsorize` | `str` | Numeric column used for the calculation |
+| `scale` | `float` | MAD scale factor (default: `1.4826`) |
+
+```python
+data = pd.DataFrame({"score": [1.0, 2.0, 3.0, 100.0]})
+
+mad = StatHelpers().median_absolute_deviation(
+    data=data,
+    col_to_winsorize="score",
+)
+# returns float
+```
+
+If the unscaled MAD is zero, the method returns `0.0`.
+
+MAD uses a direct median calculation; remove or fill missing target values first if NaNs should not propagate.
+
+---
+
+#### `winsorize_by_mad(data, col_to_winsorize, num_stdev=3.0, remove_zeros=True)`
+
+Clips the target column to `median +/- num_stdev * scaled_MAD`.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `data` | `pd.DataFrame` | Input records |
+| `col_to_winsorize` | `str` | Numeric column to clip |
+| `num_stdev` | `float` | Number of scaled MADs used for each bound (default: `3.0`) |
+| `remove_zeros` | `bool` | Exclude zeros when estimating the median and MAD (default: `True`) |
+
+```python
+winsorized = StatHelpers().winsorize_by_mad(
+    data=data,
+    col_to_winsorize="score",
+    num_stdev=3.0,
+    remove_zeros=True,
+)
+# returns pd.DataFrame with the same columns as data
+```
+
+`remove_zeros=True` affects bound estimation only; clipping is applied to every original row, including rows whose value is zero. If the bounds sample is empty or its MAD is zero, the values are returned unchanged.
+
+---
+
+#### `winsorize_by_percentile(data, col_to_winsorize, lower_quantile=0.01, upper_quantile=0.99, remove_zeros=True, bounds_filter_col=None)`
+
+Clips the target column to lower and upper percentile bounds.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `data` | `pd.DataFrame` | Input records |
+| `col_to_winsorize` | `str` | Numeric column to clip |
+| `lower_quantile` | `float` | Lower bound quantile (default: `0.01`) |
+| `upper_quantile` | `float` | Upper bound quantile (default: `0.99`) |
+| `remove_zeros` | `bool` | Exclude zeros when estimating bounds (default: `True`) |
+| `bounds_filter_col` | `str` | Optional boolean column; only `True` rows are used to estimate bounds |
+
+```python
+data = pd.DataFrame({
+    "score": [0.0, 1.0, 2.0, 3.0, 100.0],
+    "in_bounds_sample": [False, True, True, True, True],
+})
+
+winsorized = StatHelpers().winsorize_by_percentile(
+    data=data,
+    col_to_winsorize="score",
+    lower_quantile=0.01,
+    upper_quantile=0.99,
+    bounds_filter_col="in_bounds_sample",
+)
+# returns pd.DataFrame with the same columns as data
+```
+
+The optional filter and `remove_zeros` restrict only the rows used to estimate bounds. The resulting bounds are applied to the full target column.
+
+---
+
+#### `standardize_scores(data, date, col_to_standardize, remove_zeros=True, market_cap_weighted_mean=False, estu_filter=False)`
+
+Standardizes a score as `(value - mean) / sample_standard_deviation`.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `data` | `pd.DataFrame` | Input records |
+| `date` | `str` | Date used when market-cap data is required |
+| `col_to_standardize` | `str` | Numeric column to standardize |
+| `remove_zeros` | `bool` | Exclude zeros from moment estimation and leave zero positions unchanged (default: `True`) |
+| `market_cap_weighted_mean` | `bool` | Use a market-cap-weighted mean (default: `False`) |
+| `estu_filter` | `bool` | Estimate moments using only rows where `col.IN_ESTU` is `True` (default: `False`) |
+
+```python
+scores = pd.DataFrame({
+    # Obtain real ukeys from Universe as shown in Quick Start.
+    col.MSYMBOL_UKEY: ukeys[:3],
+    col.IN_ESTU: [True, True, False],
+    "score": [1.2, 2.4, 0.0],
+})
+
+standardized = StatHelpers().standardize_scores(
+    data=scores,
+    date=DateTime("20240131"),
+    col_to_standardize="score",
+    remove_zeros=True,
+    market_cap_weighted_mean=True,
+    estu_filter=True,
+)
+# returns pd.DataFrame with "score" standardized
+```
+
+`estu_filter=True` requires `col.IN_ESTU`. `market_cap_weighted_mean=True` requires `col.MSYMBOL_UKEY` and uses a weighted mean but an unweighted sample standard deviation.
+
+---
+
+#### `spearman_rank_correlation(data, col_x, col_y)`
+
+Computes Spearman rank correlation and its p-value, omitting missing pairs.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `data` | `pd.DataFrame` | Input observations |
+| `col_x` | `str` | First numeric column |
+| `col_y` | `str` | Second numeric column |
+
+```python
+correlation_data = pd.DataFrame({
+    "signal": [0.2, 0.8, 0.5, 0.1],
+    "forward_return": [0.01, 0.04, 0.02, -0.01],
+})
+
+result = StatHelpers().spearman_rank_correlation(
+    data=correlation_data,
+    col_x="signal",
+    col_y="forward_return",
+)
+# returns pd.DataFrame -> [col.CORRELATION, col.P_VALUE]
+```
+
+
+
+---
+
+#### `pearson_rank_correlation(data, col_x, col_y)`
+
+Computes the Pearson product-moment correlation coefficient.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `data` | `pd.DataFrame` | Input observations |
+| `col_x` | `str` | First numeric column |
+| `col_y` | `str` | Second numeric column |
+
+```python
+correlation_data = pd.DataFrame({
+    "signal": [0.2, 0.8, 0.5, 0.1],
+    "forward_return": [0.01, 0.04, 0.02, -0.01],
+})
+
+result = StatHelpers().pearson_rank_correlation(
+    data=correlation_data,
+    col_x="signal",
+    col_y="forward_return",
+)
+# returns pd.DataFrame -> [col.CORRELATION, col.P_VALUE]
+```
+
+---
+
+#### `growth_rate_regression(data, lhs_col, rhs_col)`
+
+Fits an equal-weight linear regression:
+
+```text
+lhs = intercept + beta * rhs + error
+```
+
+The method does not convert either input to a growth rate; callers must supply the intended transformed values.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `data` | `pd.DataFrame` | Regression observations |
+| `lhs_col` | `str` | Dependent-variable column |
+| `rhs_col` | `str` | Independent-variable column |
+
+```python
+regression_data = pd.DataFrame({
+    "earnings_growth": [0.08, 0.12, 0.18, 0.21],
+    "revenue_growth": [0.05, 0.09, 0.13, 0.17],
+})
+
+result = StatHelpers().growth_rate_regression(
+    data=regression_data,
+    lhs_col="earnings_growth",
+    rhs_col="revenue_growth",
+)
+# returns pd.DataFrame -> [col.BETA, col.LHS_AVERAGE]
+```
+---
+
 ## Constants & Columns
 
 Two pre-instantiated objects expose defined constants and standard column names as attributes.
