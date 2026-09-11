@@ -64,7 +64,7 @@ class AbstractFactor(ABC):
         print(f"Saved locally: {file_path}")
 
 
-    def backfill(self, sdate: DateTime, edate: DateTime,force_query: bool = True):
+    def backfill(self, sdate: DateTime, edate: DateTime,force_query: bool = True,max_tries: int = 3):
         dates = DateUtils().get_busdate_range(sdate, edate, self._region)
 
         USER_ID = os.environ.get('USER_ID')
@@ -96,7 +96,7 @@ class AbstractFactor(ABC):
             iter_list=dates,
             func=partial(self._process_single_date, class_name = CLASS_NAME, dir_path=dir_path),
             processes=cpu_count(),
-            max_tries = 3,
+            max_tries = max_tries,
             use_threads=False,
         )
 
