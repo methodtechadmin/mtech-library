@@ -1436,3 +1436,13 @@ Used in `SecurityInfo` methods to filter by instrument type.
 ### `UniverseType`
 
 Used in `Universe.get_universe()`.
+
+
+### 'ReturnType'
+
+Used in 'Returns' methods to get total or residual returns.
+
+| Value | Description |
+|---|---|
+| `ReturnType.TOTAL` | Total Returns |
+| `ReturnType.RESIDUAL` | Residual Returns |
