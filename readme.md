@@ -20,7 +20,8 @@ Library for accessing market data, corporate actions, corporate financials, secu
 - [Returns](#returns)
 - [RiskDecomposition](#riskdecomposition)
 - [StatHelpers](#stathelpers)
-- [Constants & Columns](#constants--columns)
+- [MFData](#mfdata)
+- [Constants &amp; Columns](#constants--columns)
 - [Enums](#enums)
 
 ---
@@ -55,21 +56,21 @@ from mtech.enums import UniverseType
 
 ## Classes Overview
 
-| Class | Purpose |
-|---|---|
-| `DateTime` | Timezone-aware datetime object |
-| `Region` | Exchange and timezone metadata for a region |
-| `DateUtils` | Business date arithmetic and calendar utilities |
-| `Universe` | Full, coverage, and estimation universes |
-| `MarketData` | Prices, volumes, returns, market cap |
-| `CorporateActions` | Splits, bonuses, dividends |
-| `CorporateData` | Financial statements, shareholding |
-| `SecurityInfo` | Security lookups, symbol/ISIN/ukey mapping |
-| `Returns` | Forward, daily, cumulative, and category returns |
+| Class                 | Purpose                                                             |
+| --------------------- | ------------------------------------------------------------------- |
+| `DateTime`          | Timezone-aware datetime object                                      |
+| `Region`            | Exchange and timezone metadata for a region                         |
+| `DateUtils`         | Business date arithmetic and calendar utilities                     |
+| `Universe`          | Full, coverage, and estimation universes                            |
+| `MarketData`        | Prices, volumes, returns, market cap                                |
+| `CorporateActions`  | Splits, bonuses, dividends                                          |
+| `CorporateData`     | Financial statements, shareholding                                  |
+| `SecurityInfo`      | Security lookups, symbol/ISIN/ukey mapping                          |
+| `Returns`           | Forward, daily, cumulative, and category returns                    |
 | `RiskDecomposition` | Risk-model data, portfolio risk, attribution, and event sensitivity |
-| `StatHelpers` | Winsorization, standardization, correlation, and regression helpers |
-| `constants` | Constant Variables |
-| `columns` | Column Variables |
+| `StatHelpers`       | Winsorization, standardization, correlation, and regression helpers |
+| `constants`         | Constant Variables                                                  |
+| `columns`           | Column Variables                                                    |
 
 ---
 
@@ -114,9 +115,9 @@ edate = DateTime("20240630")
 DateTime(input: str, input_tz: str = "Asia/Kolkata", store_tz: str = "Asia/Kolkata")
 ```
 
-| Parameter | Type | Description |
-|---|---|---|
-| `input` | `str` | Date/datetime string |
+| Parameter    | Type    | Description                                                |
+| ------------ | ------- | ---------------------------------------------------------- |
+| `input`    | `str` | Date/datetime string                                       |
 | `input_tz` | `str` | Timezone of the input string (default: `"Asia/Kolkata"`) |
 | `store_tz` | `str` | Timezone to store internally (default: `"Asia/Kolkata"`) |
 
@@ -124,8 +125,8 @@ DateTime(input: str, input_tz: str = "Asia/Kolkata", store_tz: str = "Asia/Kolka
 
 #### `DateTime.from_epoch_days(epoch_days)`
 
-| Parameter | Type | Description |
-|---|---|---|
+| Parameter      | Type    | Description                            |
+| -------------- | ------- | -------------------------------------- |
 | `epoch_days` | `int` | Integer count of days since Unix epoch |
 
 ```python
@@ -134,26 +135,26 @@ dt = DateTime.from_epoch_days(19723)
 
 ### Properties
 
-| Property | Type | Description |
-|---|---|---|
-| `year` | `int` | Year component |
-| `month` | `int` | Month component |
-| `day` | `int` | Day component |
-| `hour` | `int` | Hour component |
-| `minute` | `int` | Minute component |
-| `second` | `int` | Second component |
-| `native` | any | Native datetime object |
+| Property   | Type    | Description            |
+| ---------- | ------- | ---------------------- |
+| `year`   | `int` | Year component         |
+| `month`  | `int` | Month component        |
+| `day`    | `int` | Day component          |
+| `hour`   | `int` | Hour component         |
+| `minute` | `int` | Minute component       |
+| `second` | `int` | Second component       |
+| `native` | any     | Native datetime object |
 
 ### Methods
 
-| Method | Returns | Description |
-|---|---|---|
-| `to_epoch()` | `int` | Unix timestamp in seconds |
-| `to_epoch_days()` | `int` | Days since Unix epoch |
-| `datetime(tz)` | datetime | Native datetime in given timezone |
-| `str_format(fmt, tz)` | `str` | Formatted string (e.g. `"%Y-%m-%d"`) |
-| `input_tz()` | `str` | Input timezone string |
-| `store_tz()` | `str` | Storage timezone string |
+| Method                  | Returns  | Description                            |
+| ----------------------- | -------- | -------------------------------------- |
+| `to_epoch()`          | `int`  | Unix timestamp in seconds              |
+| `to_epoch_days()`     | `int`  | Days since Unix epoch                  |
+| `datetime(tz)`        | datetime | Native datetime in given timezone      |
+| `str_format(fmt, tz)` | `str`  | Formatted string (e.g. `"%Y-%m-%d"`) |
+| `input_tz()`          | `str`  | Input timezone string                  |
+| `store_tz()`          | `str`  | Storage timezone string                |
 
 ### Operators
 
@@ -182,20 +183,20 @@ region = Region("IN")
 
 ### Constructor
 
-| Parameter | Type | Description |
-|---|---|---|
+| Parameter  | Type    | Description               |
+| ---------- | ------- | ------------------------- |
 | `region` | `str` | Region code e.g. `"IN"` |
 
 ### Properties
 
-| Property | Type | Description |
-|---|---|---|
-| `name` | `str` | Region identifier |
-| `countries` | `list` | Countries in the region |
-| `exchanges` | `list` | All exchanges |
+| Property                   | Type     | Description              |
+| -------------------------- | -------- | ------------------------ |
+| `name`                   | `str`  | Region identifier        |
+| `countries`              | `list` | Countries in the region  |
+| `exchanges`              | `list` | All exchanges            |
 | `common_stock_exchanges` | `list` | Primary equity exchanges |
-| `primary_exchange` | `str` | The main exchange |
-| `timezone` | `str` | e.g. `"Asia/Kolkata"` |
+| `primary_exchange`       | `str`  | The main exchange        |
+| `timezone`               | `str`  | e.g. `"Asia/Kolkata"`  |
 
 ```python
 print(region.primary_exchange)   # "NSE"
@@ -218,14 +219,14 @@ du = DateUtils()
 
 #### Date Checking
 
-| Method | Parameters | Returns | Description |
-|---|---|---|---|
-| `now(region)` | `region: Region` | `DateTime` | Current date and time |
-| `is_busdate(date, region)` | `date: DateTime`, `region: Region` | `bool` | Check if date is a business day |
-| `get_busdate(date, region, next)` | `date: DateTime`, `region: Region` | `DateTime` | Next or previous business date |
-| `shift_busdate(date, region, n)` | `date: DateTime`, `region: Region`, `n: int` | `DateTime` | Shift by N business days |
-| `get_busdate_range(start_date, end_date, region)` | `start_date: DateTime`, `end_date: DateTime`, `region: Region` | `List[DateTime]` | All business dates in range |
-| `get_all_busdates(region)` | `region: Region` | `List[DateTime]` | All known business dates |
+| Method                                              | Parameters                                                           | Returns            | Description                     |
+| --------------------------------------------------- | -------------------------------------------------------------------- | ------------------ | ------------------------------- |
+| `now(region)`                                     | `region: Region`                                                   | `DateTime`       | Current date and time           |
+| `is_busdate(date, region)`                        | `date: DateTime`, `region: Region`                               | `bool`           | Check if date is a business day |
+| `get_busdate(date, region, next)`                 | `date: DateTime`, `region: Region`                               | `DateTime`       | Next or previous business date  |
+| `shift_busdate(date, region, n)`                  | `date: DateTime`, `region: Region`, `n: int`                   | `DateTime`       | Shift by N business days        |
+| `get_busdate_range(start_date, end_date, region)` | `start_date: DateTime`, `end_date: DateTime`, `region: Region` | `List[DateTime]` | All business dates in range     |
+| `get_all_busdates(region)`                        | `region: Region`                                                   | `List[DateTime]` | All known business dates        |
 
 ```python
 region = Region("IN")
@@ -245,20 +246,20 @@ du.get_all_busdates(region=region)                                       # list 
 
 All period methods return `(DateTime, DateTime)` tuples for start and end. The `n` parameter shifts by that many periods (e.g. `n=-1` for previous period, `n=1` for next).
 
-| Method | Description |
-|---|---|
-| `get_week_start_end(date, region, n)` | Week boundaries |
-| `get_month_start_end(date, region, n)` | Month boundaries |
-| `get_quarter_start_end(date, region, n)` | Quarter boundaries |
-| `get_semi_annual_start_end(date, region, n)` | Half-year boundaries |
+| Method                                            | Description               |
+| ------------------------------------------------- | ------------------------- |
+| `get_week_start_end(date, region, n)`           | Week boundaries           |
+| `get_month_start_end(date, region, n)`          | Month boundaries          |
+| `get_quarter_start_end(date, region, n)`        | Quarter boundaries        |
+| `get_semi_annual_start_end(date, region, n)`    | Half-year boundaries      |
 | `get_financial_year_start_end(date, region, n)` | Financial year boundaries |
-| `get_calendar_year_start_end(date, region, n)` | Calendar year boundaries |
+| `get_calendar_year_start_end(date, region, n)`  | Calendar year boundaries  |
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date` | `DateTime` | Reference date |
-| `region` | `Region` | Region object (default: `Region("IN")`) |
-| `n` | `int` | Period offset — `0` = current, `-1` = previous, `1` = next |
+| Parameter  | Type         | Description                                                       |
+| ---------- | ------------ | ----------------------------------------------------------------- |
+| `date`   | `DateTime` | Reference date                                                    |
+| `region` | `Region`   | Region object (default: `Region("IN")`)                         |
+| `n`      | `int`      | Period offset — `0` = current, `-1` = previous, `1` = next |
 
 ```python
 region = Region("IN")
@@ -270,14 +271,14 @@ start, end = du.get_financial_year_start_end(sdate, region=region, n=-1) # 20230
 
 Each has a corresponding `get_all_*` variant that returns a list of `(start, end)` tuples across a date range:
 
-| Method | Parameters |
-|---|---|
-| `get_all_week_start_end(start_date, end_date, region)` | `start_date: DateTime`, `end_date: DateTime`, `region: Region` |
-| `get_all_month_start_end(start_date, end_date, region)` | `start_date: DateTime`, `end_date: DateTime`, `region: Region` |
-| `get_all_quarter_start_end(start_date, end_date, region)` | `start_date: DateTime`, `end_date: DateTime`, `region: Region` |
-| `get_all_semi_annual_start_end(start_date, end_date, region)` | `start_date: DateTime`, `end_date: DateTime`, `region: Region` |
+| Method                                                             | Parameters                                                           |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| `get_all_week_start_end(start_date, end_date, region)`           | `start_date: DateTime`, `end_date: DateTime`, `region: Region` |
+| `get_all_month_start_end(start_date, end_date, region)`          | `start_date: DateTime`, `end_date: DateTime`, `region: Region` |
+| `get_all_quarter_start_end(start_date, end_date, region)`        | `start_date: DateTime`, `end_date: DateTime`, `region: Region` |
+| `get_all_semi_annual_start_end(start_date, end_date, region)`    | `start_date: DateTime`, `end_date: DateTime`, `region: Region` |
 | `get_all_financial_year_start_end(start_date, end_date, region)` | `start_date: DateTime`, `end_date: DateTime`, `region: Region` |
-| `get_all_calendar_year_start_end(start_date, end_date, region)` | `start_date: DateTime`, `end_date: DateTime`, `region: Region` |
+| `get_all_calendar_year_start_end(start_date, end_date, region)`  | `start_date: DateTime`, `end_date: DateTime`, `region: Region` |
 
 ```python
 quarters = du.get_all_quarter_start_end(DateTime("20230101"), DateTime("20241231"), region=Region("IN"))
@@ -288,15 +289,15 @@ quarters = du.get_all_quarter_start_end(DateTime("20230101"), DateTime("20241231
 
 #### Other Utilities
 
-| Method | Parameters | Returns | Description |
-|---|---|---|---|
-| `exchange_calendar(region, force_query)` | `region: Region`, `force_query: bool` | `pd.DataFrame` | Exchange holiday calendar |
-| `epoch_to_datetime(epoch, tz)` | `epoch: int`, `tz: str` | `DateTime` | Convert Unix epoch to DateTime |
-| `get_last_thurs_of_month(date, region)` | `date: DateTime`, `region: Region` | `DateTime` | Last Thursday of the month |
-| `add_mins(date, mins)` | `date: DateTime`, `mins: int` | `DateTime` | Add minutes to a DateTime |
-| `get_intervals(start_date, end_date, region, step_mins)` | `start_date: DateTime`, `end_date: DateTime`, `region: Region`, `step_mins: int` | `List[DateTime]` | Intraday intervals at fixed step |
-| `get_quarter_index(date, region)` | `date: DateTime`, `region: Region` | `int` | Quarter number (1–4) |
-| `get_dt_obj_with_filler(date_str, default_date)` | `date_str: str`, `default_date: str` | `DateTime` | Return default if date_str is blank |
+| Method                                                     | Parameters                                                                               | Returns            | Description                         |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------ | ----------------------------------- |
+| `exchange_calendar(region, force_query)`                 | `region: Region`, `force_query: bool`                                                | `pd.DataFrame`   | Exchange holiday calendar           |
+| `epoch_to_datetime(epoch, tz)`                           | `epoch: int`, `tz: str`                                                              | `DateTime`       | Convert Unix epoch to DateTime      |
+| `get_last_thurs_of_month(date, region)`                  | `date: DateTime`, `region: Region`                                                   | `DateTime`       | Last Thursday of the month          |
+| `add_mins(date, mins)`                                   | `date: DateTime`, `mins: int`                                                        | `DateTime`       | Add minutes to a DateTime           |
+| `get_intervals(start_date, end_date, region, step_mins)` | `start_date: DateTime`, `end_date: DateTime`, `region: Region`, `step_mins: int` | `List[DateTime]` | Intraday intervals at fixed step    |
+| `get_quarter_index(date, region)`                        | `date: DateTime`, `region: Region`                                                   | `int`            | Quarter number (1–4)               |
+| `get_dt_obj_with_filler(date_str, default_date)`         | `date_str: str`, `default_date: str`                                                 | `DateTime`       | Return default if date_str is blank |
 
 ```python
 region = Region("IN")
@@ -335,10 +336,10 @@ ukeys = univ[col.MSYMBOL_UKEY].tolist()
 
 #### `get_universe(univ_type, date)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `univ_type` | `UniverseType` | Universe type e.g. `UniverseType.NIFTY500, UniverseType.BSE500, UniverseType.NIFTY`  |
-| `date` | `DateTime` | Reference date |
+| Parameter     | Type             | Description                                                                           |
+| ------------- | ---------------- | ------------------------------------------------------------------------------------- |
+| `univ_type` | `UniverseType` | Universe type e.g. `UniverseType.NIFTY500, UniverseType.BSE500, UniverseType.NIFTY` |
+| `date`      | `DateTime`     | Reference date                                                                        |
 
 ```python
 univ  = Universe(region).get_universe(univ_type=UniverseType.NIFTY500, date=sdate)
@@ -349,9 +350,9 @@ ukeys = univ[col.MSYMBOL_UKEY].tolist()
 
 #### `full_universe(date)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date` | `DateTime` | Reference date |
+| Parameter | Type         | Description    |
+| --------- | ------------ | -------------- |
+| `date`  | `DateTime` | Reference date |
 
 ```python
 df = Universe(region).full_universe(sdate)
@@ -361,9 +362,9 @@ df = Universe(region).full_universe(sdate)
 
 #### `coverage_universe(date)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date` | `DateTime` | Reference date |
+| Parameter | Type         | Description    |
+| --------- | ------------ | -------------- |
+| `date`  | `DateTime` | Reference date |
 
 ```python
 df = Universe(region).coverage_universe(sdate)
@@ -373,9 +374,9 @@ df = Universe(region).coverage_universe(sdate)
 
 #### `estimation_universe(date)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date` | `DateTime` | Reference date |
+| Parameter | Type         | Description    |
+| --------- | ------------ | -------------- |
+| `date`  | `DateTime` | Reference date |
 
 ```python
 df = Universe(region).estimation_universe(sdate)
@@ -405,6 +406,7 @@ from mtech import Region
 from mtech import columns as col
 from mtech.enums import UniverseType
 from mtech.enums import VOLUME_TYPE
+from mtech.enums import FuturesTerm
 
 region = Region("IN")
 sdate  = DateTime("20240101")
@@ -420,10 +422,10 @@ md = MarketData()
 
 #### `get_unadjusted_price(date_times, ukeys)`
 
-| Parameter | Type | Description |
-|---|---|---|
+| Parameter      | Type               | Description            |
+| -------------- | ------------------ | ---------------------- |
 | `date_times` | `List[DateTime]` | List of dates to query |
-| `ukeys` | `List[int]` | List of security keys |
+| `ukeys`      | `List[int]`      | List of security keys  |
 
 ```python
 df = md.get_unadjusted_price(
@@ -437,10 +439,10 @@ df = md.get_unadjusted_price(
 
 #### `get_adjusted_price(date_times, ukeys)`
 
-| Parameter | Type | Description |
-|---|---|---|
+| Parameter      | Type               | Description            |
+| -------------- | ------------------ | ---------------------- |
 | `date_times` | `List[DateTime]` | List of dates to query |
-| `ukeys` | `List[int]` | List of security keys |
+| `ukeys`      | `List[int]`      | List of security keys  |
 
 ```python
 df = md.get_adjusted_price(
@@ -454,10 +456,10 @@ df = md.get_adjusted_price(
 
 #### `get_daily_returns(date_times, ukeys)`
 
-| Parameter | Type | Description |
-|---|---|---|
+| Parameter      | Type               | Description            |
+| -------------- | ------------------ | ---------------------- |
 | `date_times` | `List[DateTime]` | List of dates to query |
-| `ukeys` | `List[int]` | List of security keys |
+| `ukeys`      | `List[int]`      | List of security keys  |
 
 ```python
 df = md.get_daily_returns(
@@ -471,11 +473,11 @@ df = md.get_daily_returns(
 
 #### `get_unadjusted_volume(date_times, ukeys, volume_type)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date_times` | `List[DateTime]` | List of dates to query |
-| `ukeys` | `List[int]` | List of security keys |
-| `volume_type` | `VOLUME_TYPE` | Volume aggregation type (default: `VOLUME_TYPE.MULTI_EXCHANGE_VOLUME`) |
+| Parameter       | Type               | Description                                                              |
+| --------------- | ------------------ | ------------------------------------------------------------------------ |
+| `date_times`  | `List[DateTime]` | List of dates to query                                                   |
+| `ukeys`       | `List[int]`      | List of security keys                                                    |
+| `volume_type` | `VOLUME_TYPE`    | Volume aggregation type (default: `VOLUME_TYPE.MULTI_EXCHANGE_VOLUME`) |
 
 ```python
 df = md.get_unadjusted_volume(
@@ -490,11 +492,11 @@ df = md.get_unadjusted_volume(
 
 #### `get_adjusted_volume(date_times, ukeys, volume_type)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date_times` | `List[DateTime]` | List of dates to query |
-| `ukeys` | `List[int]` | List of security keys |
-| `volume_type` | `VOLUME_TYPE` | Volume aggregation type (default: `VOLUME_TYPE.MULTI_EXCHANGE_VOLUME`) |
+| Parameter       | Type               | Description                                                              |
+| --------------- | ------------------ | ------------------------------------------------------------------------ |
+| `date_times`  | `List[DateTime]` | List of dates to query                                                   |
+| `ukeys`       | `List[int]`      | List of security keys                                                    |
+| `volume_type` | `VOLUME_TYPE`    | Volume aggregation type (default: `VOLUME_TYPE.MULTI_EXCHANGE_VOLUME`) |
 
 ```python
 df = md.get_adjusted_volume(
@@ -511,12 +513,12 @@ df = md.get_adjusted_volume(
 
 Returns Average Daily Trading Volume (ADTV) over a lookback window. Default lookback is 63 days.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date_times` | `List[DateTime]` | List of dates to query |
-| `ukeys` | `List[int]` | List of security keys |
-| `volume_type` | `VOLUME_TYPE` | Volume aggregation type (default: `VOLUME_TYPE.MULTI_EXCHANGE_VOLUME`) |
-| `lookback_days` | `int` | Lookback window in trading days (default: `63`) |
+| Parameter         | Type               | Description                                                              |
+| ----------------- | ------------------ | ------------------------------------------------------------------------ |
+| `date_times`    | `List[DateTime]` | List of dates to query                                                   |
+| `ukeys`         | `List[int]`      | List of security keys                                                    |
+| `volume_type`   | `VOLUME_TYPE`    | Volume aggregation type (default: `VOLUME_TYPE.MULTI_EXCHANGE_VOLUME`) |
+| `lookback_days` | `int`            | Lookback window in trading days (default: `63`)                        |
 
 ```python
 df = md.get_adtv(
@@ -532,10 +534,10 @@ df = md.get_adtv(
 
 #### `get_market_cap(date_times, ukeys)`
 
-| Parameter | Type | Description |
-|---|---|---|
+| Parameter      | Type               | Description            |
+| -------------- | ------------------ | ---------------------- |
 | `date_times` | `List[DateTime]` | List of dates to query |
-| `ukeys` | `List[int]` | List of security keys |
+| `ukeys`      | `List[int]`      | List of security keys  |
 
 ```python
 df = md.get_market_cap(
@@ -551,13 +553,13 @@ df = md.get_market_cap(
 
 Returns cumulative daily returns over a date range. Supports winsorization bounds (default: -10.0 to +10.0).
 
-| Parameter | Type | Description |
-|---|---|---|
-| `start_date` | `DateTime` | Start of the date range |
-| `end_date` | `DateTime` | End of the date range |
-| `ukeys` | `List[int]` | List of security keys |
-| `daily_ret_winz_lb` | `float` | Lower winsorization bound (default: `-10.0`) |
-| `daily_ret_winz_ub` | `float` | Upper winsorization bound (default: `10.0`) |
+| Parameter             | Type          | Description                                    |
+| --------------------- | ------------- | ---------------------------------------------- |
+| `start_date`        | `DateTime`  | Start of the date range                        |
+| `end_date`          | `DateTime`  | End of the date range                          |
+| `ukeys`             | `List[int]` | List of security keys                          |
+| `daily_ret_winz_lb` | `float`     | Lower winsorization bound (default: `-10.0`) |
+| `daily_ret_winz_ub` | `float`     | Upper winsorization bound (default: `10.0`)  |
 
 ```python
 df = md.get_cumulative_daily_returns(
@@ -569,6 +571,73 @@ df = md.get_cumulative_daily_returns(
 )
 # returns pd.DataFrame -> [col.MSYMBOL_UKEY, col.MISSING_DATA_PERCENTAGE, col.RETURN]
 ```
+
+#### `get_futures_price(date_times, ukeys, futures_terms)`
+
+Returns OHLC prices and open interest of the near-month, next-month and far-month futures contracts for each underlying. Contracts trading on a date are ranked by expiration date: the nearest-expiring is near-month, the next is next-month, the one after is far-month.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `date_times` | `List[DateTime]` | List of dates to query |
+| `ukeys` | `List[int]` | Security keys of the underlying (e.g. a stock or index). A stock's ukey is mapped to its underlying automatically |
+| `futures_terms` | `List[FuturesTerm]` | Terms to return (default: all three — `NEAR_MONTH`, `NEXT_MONTH`, `FAR_MONTH`) |
+
+```python
+df = md.get_futures_price(
+    date_times=[sdate],
+    ukeys=ukeys,
+    futures_terms=[FuturesTerm.NEAR_MONTH, FuturesTerm.NEXT_MONTH, FuturesTerm.FAR_MONTH]
+)
+# returns pd.DataFrame -> [col.DATETIME, col.UNDERLYING_MSYMBOL_UKEY, col.UNDERLYING_MSYMBOL, col.FUTURES_TERM, col.MSYMBOL_UKEY, col.MSYMBOL, col.EXPIRATION_DATE, col.OPEN_INTEREST, col.HIGH_PRICE, col.LOW_PRICE, col.OPEN_PRICE, col.CLOSE_PRICE]
+```
+
+- One row per date, underlying and term. `col.FUTURES_TERM` holds `"near_month"`, `"next_month"` or `"far_month"`; `col.MSYMBOL_UKEY` / `col.MSYMBOL` identify the futures contract.
+- Prices are unadjusted. `col.OPEN_INTEREST` is in shares, not lots.
+- Underlyings with no futures on a date return no rows; underlyings with fewer than three contracts return fewer rows.
+
+---
+
+#### `get_futures_returns(date_times, ukeys, futures_terms)`
+
+Returns daily returns of the near-month, next-month and far-month futures contracts for each underlying. Each return is for the same contract over the day (previous close to close), so there is no jump when the near-month contract rolls over at expiry.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `date_times` | `List[DateTime]` | List of dates to query |
+| `ukeys` | `List[int]` | Security keys of the underlying (e.g. a stock or index). A stock's ukey is mapped to its underlying automatically |
+| `futures_terms` | `List[FuturesTerm]` | Terms to return (default: all three — `NEAR_MONTH`, `NEXT_MONTH`, `FAR_MONTH`) |
+
+```python
+df = md.get_futures_returns(
+    date_times=[sdate],
+    ukeys=ukeys,
+    futures_terms=[FuturesTerm.NEAR_MONTH]
+)
+# returns pd.DataFrame -> [col.DATETIME, col.UNDERLYING_MSYMBOL_UKEY, col.UNDERLYING_MSYMBOL, col.FUTURES_TERM, col.MSYMBOL_UKEY, col.MSYMBOL, col.EXPIRATION_DATE, col.OPEN_INTEREST, col.RETURN, col.RETURN_CTO, col.RETURN_OTC]
+```
+
+- `col.RETURN` is close-to-close, `col.RETURN_CTO` close-to-open, `col.RETURN_OTC` open-to-close — same as `get_daily_returns`.
+- On a contract's first trading day there is no previous close, so its return is `0`.
+
+---
+
+#### `get_fno_ban_list(date_times)`
+
+Returns all securities in the NSE F&O ban period on each date (source: NSE daily `fo_secban` file). Takes no `ukeys` — it returns every banned security.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `date_times` | `List[DateTime]` | List of dates to query |
+
+```python
+df = md.get_fno_ban_list(
+    date_times=[sdate, edate]
+)
+# returns pd.DataFrame -> [col.DATETIME, col.UNDERLYING_MSYMBOL_UKEY, col.UNDERLYING_MSYMBOL, col.UNDERLYING_EXCHANGE_SYMBOL]
+```
+
+- One row per banned security per date. Dates with no securities in ban return no rows.
+- To flag futures in ban, merge on `[col.DATETIME, col.UNDERLYING_MSYMBOL_UKEY]` with the output of `get_futures_price` / `get_futures_returns`.
 
 ---
 
@@ -598,11 +667,11 @@ ca = CorporateActions()
 
 #### `get_splits_bonuses_data(date_times, ukeys, filter_for_fin_types)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date_times` | `List[DateTime]` | List of dates to query |
-| `ukeys` | `List[int]` | List of security keys |
-| `filter_for_fin_types` | `bool` | Filter results by financial instrument type (optional) |
+| Parameter                | Type               | Description                                            |
+| ------------------------ | ------------------ | ------------------------------------------------------ |
+| `date_times`           | `List[DateTime]` | List of dates to query                                 |
+| `ukeys`                | `List[int]`      | List of security keys                                  |
+| `filter_for_fin_types` | `bool`           | Filter results by financial instrument type (optional) |
 
 ```python
 df = ca.get_splits_bonuses_data(
@@ -617,12 +686,12 @@ df = ca.get_splits_bonuses_data(
 
 #### `get_cumulative_splits_bonuses_data(start_date, end_date, ukeys, filter_for_fin_types)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `start_date` | `DateTime` | Start of the date range |
-| `end_date` | `DateTime` | End of the date range |
-| `ukeys` | `List[int]` | List of security keys |
-| `filter_for_fin_types` | `bool` | Filter results by financial instrument type (optional) |
+| Parameter                | Type          | Description                                            |
+| ------------------------ | ------------- | ------------------------------------------------------ |
+| `start_date`           | `DateTime`  | Start of the date range                                |
+| `end_date`             | `DateTime`  | End of the date range                                  |
+| `ukeys`                | `List[int]` | List of security keys                                  |
+| `filter_for_fin_types` | `bool`      | Filter results by financial instrument type (optional) |
 
 ```python
 df = ca.get_cumulative_splits_bonuses_data(
@@ -637,10 +706,10 @@ df = ca.get_cumulative_splits_bonuses_data(
 
 #### `get_dividends_data(date_times, date_col)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date_times` | `List[DateTime]` | List of dates to query |
-| `date_col` | `str` | col.EX_DIVIDEND_DATE, col.DIVIDEND_RECORD_DATE, col.DIVIDEND_PAY_DATE, col.DIVIDEND_DECLARATION_DATE |
+| Parameter      | Type               | Description                                                                                          |
+| -------------- | ------------------ | ---------------------------------------------------------------------------------------------------- |
+| `date_times` | `List[DateTime]` | List of dates to query                                                                               |
+| `date_col`   | `str`            | col.EX_DIVIDEND_DATE, col.DIVIDEND_RECORD_DATE, col.DIVIDEND_PAY_DATE, col.DIVIDEND_DECLARATION_DATE |
 
 ```python
 df = ca.get_dividends_data(
@@ -682,15 +751,15 @@ cd = CorporateData()
 
 Fetches the most recent available value of a financial metric as of a given date.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `as_on_date` | `DateTime` | Reference date |
-| `report_type` | `FinancialReportType` | e.g. `FinancialReportType.INCOME_STATEMENT`, `FinancialReportType.BALANCE_SHEET` |
-| `report_period` | `FinancialReportPeriod` | e.g. `FinancialReportPeriod.QUARTERLY`, `FinancialReportPeriod.ANNUAL` |
-| `report_metric` | `FinancialReportMetric` | e.g. `FinancialReportMetric.TOTAL_REVENUE`, `FinancialReportMetric.PROFIT_AFTER_TAX` |
-| `ukeys` | `List[int]` | List of security keys |
-| `lookback_periods` | `int` | How many periods to look back (default: `2`) |
-| `fallback_to_annual` | `bool` | Fall back to annual if quarterly unavailable (default: `False`) |
+| Parameter              | Type                      | Description                                                                              |
+| ---------------------- | ------------------------- | ---------------------------------------------------------------------------------------- |
+| `as_on_date`         | `DateTime`              | Reference date                                                                           |
+| `report_type`        | `FinancialReportType`   | e.g. `FinancialReportType.INCOME_STATEMENT`, `FinancialReportType.BALANCE_SHEET`     |
+| `report_period`      | `FinancialReportPeriod` | e.g. `FinancialReportPeriod.QUARTERLY`, `FinancialReportPeriod.ANNUAL`               |
+| `report_metric`      | `FinancialReportMetric` | e.g. `FinancialReportMetric.TOTAL_REVENUE`, `FinancialReportMetric.PROFIT_AFTER_TAX` |
+| `ukeys`              | `List[int]`             | List of security keys                                                                    |
+| `lookback_periods`   | `int`                   | How many periods to look back (default: `2`)                                           |
+| `fallback_to_annual` | `bool`                  | Fall back to annual if quarterly unavailable (default: `False`)                        |
 
 ```python
 df = cd.get_financial_statement_metric_as_on_date(
@@ -711,14 +780,14 @@ df = cd.get_financial_statement_metric_as_on_date(
 
 Fetches raw metric values for specific reporting periods.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `as_on_date` | `DateTime` | Reference date |
-| `report_type` | `FinancialReportType` | e.g. `FinancialReportType.INCOME_STATEMENT`, `FinancialReportType.BALANCE_SHEET` |
-| `report_period` | `FinancialReportPeriod` | e.g. `FinancialReportPeriod.QUARTERLY`, `FinancialReportPeriod.ANNUAL` |
+| Parameter         | Type                      | Description                                                                              |
+| ----------------- | ------------------------- | ---------------------------------------------------------------------------------------- |
+| `as_on_date`    | `DateTime`              | Reference date                                                                           |
+| `report_type`   | `FinancialReportType`   | e.g. `FinancialReportType.INCOME_STATEMENT`, `FinancialReportType.BALANCE_SHEET`     |
+| `report_period` | `FinancialReportPeriod` | e.g. `FinancialReportPeriod.QUARTERLY`, `FinancialReportPeriod.ANNUAL`               |
 | `report_metric` | `FinancialReportMetric` | e.g. `FinancialReportMetric.TOTAL_REVENUE`, `FinancialReportMetric.PROFIT_AFTER_TAX` |
-| `ukeys` | `List[int]` | List of security keys |
-| `periods` | `List[DateTime]` | Specific reporting periods as DateTime objects |
+| `ukeys`         | `List[int]`             | List of security keys                                                                    |
+| `periods`       | `List[DateTime]`        | Specific reporting periods as DateTime objects                                           |
 
 ```python
 df = cd.get_financial_statement_raw_metric_for_periods(
@@ -736,11 +805,11 @@ df = cd.get_financial_statement_raw_metric_for_periods(
 
 #### `get_share_holding_aggregate_data_as_on_date(as_on_date, ukeys, lookback_periods)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `as_on_date` | `DateTime` | Reference date |
-| `ukeys` | `List[int]` | List of security keys |
-| `lookback_periods` | `int` | How many periods to look back (default: `2`) |
+| Parameter            | Type          | Description                                    |
+| -------------------- | ------------- | ---------------------------------------------- |
+| `as_on_date`       | `DateTime`  | Reference date                                 |
+| `ukeys`            | `List[int]` | List of security keys                          |
+| `lookback_periods` | `int`       | How many periods to look back (default: `2`) |
 
 ```python
 df = cd.get_share_holding_aggregate_data_as_on_date(
@@ -755,11 +824,11 @@ df = cd.get_share_holding_aggregate_data_as_on_date(
 
 #### `get_share_holding_aggregate_data_for_periods(as_on_date, ukeys, periods)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `as_on_date` | `DateTime` | Reference date |
-| `ukeys` | `List[int]` | List of security keys |
-| `periods` | `List[DateTime]` | Specific reporting periods as DateTime objects |
+| Parameter      | Type               | Description                                    |
+| -------------- | ------------------ | ---------------------------------------------- |
+| `as_on_date` | `DateTime`       | Reference date                                 |
+| `ukeys`      | `List[int]`      | List of security keys                          |
+| `periods`    | `List[DateTime]` | Specific reporting periods as DateTime objects |
 
 ```python
 df = cd.get_share_holding_aggregate_data_for_periods(
@@ -798,11 +867,11 @@ si = SecurityInfo()
 
 #### `get_sec_data(as_on_date, msymbols, ukeys, exchange_symbols)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `as_on_date` | `DateTime` | Reference date |
-| `msymbols` | `List[str]` | List of master symbols |
-| `ukeys` | `List[int]` | List of security keys |
+| Parameter            | Type          | Description              |
+| -------------------- | ------------- | ------------------------ |
+| `as_on_date`       | `DateTime`  | Reference date           |
+| `msymbols`         | `List[str]` | List of master symbols   |
+| `ukeys`            | `List[int]` | List of security keys    |
 | `exchange_symbols` | `List[str]` | List of exchange symbols |
 
 ```python
@@ -817,8 +886,8 @@ df = si.get_sec_data(
 
 #### `get_exchange_symbol_to_ukey_map(exchange_symbols)`
 
-| Parameter | Type | Description |
-|---|---|---|
+| Parameter            | Type             | Description                                                               |
+| -------------------- | ---------------- | ------------------------------------------------------------------------- |
 | `exchange_symbols` | `pd.DataFrame` | DataFrame with columns `[col.EXCHANGE_SYMBOL, col.FINANCIAL_TYPE_NAME]` |
 
 ```python
@@ -831,9 +900,9 @@ df = si.get_exchange_symbol_to_ukey_map(
 
 #### `get_isin_to_exchange_symbol_map(isins, exchange_names)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `isins` | `List[str]` | List of ISIN strings |
+| Parameter          | Type          | Description                         |
+| ------------------ | ------------- | ----------------------------------- |
+| `isins`          | `List[str]` | List of ISIN strings                |
 | `exchange_names` | `List[str]` | Filter by exchange names (optional) |
 
 ```python
@@ -848,9 +917,9 @@ df = si.get_isin_to_exchange_symbol_map(
 
 #### `get_ukey_to_isin_map(ukeys, exchange_names)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `ukeys` | `List[int]` | List of security keys |
+| Parameter          | Type          | Description                         |
+| ------------------ | ------------- | ----------------------------------- |
+| `ukeys`          | `List[int]` | List of security keys               |
 | `exchange_names` | `List[str]` | Filter by exchange names (optional) |
 
 ```python
@@ -862,13 +931,13 @@ df = si.get_ukey_to_isin_map(ukeys=ukeys)
 
 #### `get_all_issues_for_underlying(as_on_date, underlying_msymbols, underlying_ukeys, underlying_exchange_symbols, financial_types)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `as_on_date` | `DateTime` | Reference date (optional) |
-| `underlying_msymbols` | `List[str]` | Underlying master symbols (optional) |
-| `underlying_ukeys` | `List[int]` | Underlying security keys (optional) |
-| `underlying_exchange_symbols` | `List[str]` | Underlying exchange symbols (optional) |
-| `financial_types` | `List[FinancialType]` | Filter by instrument type e.g. `[FinancialType.EQ, FinancialType.FUT]` (optional) |
+| Parameter                       | Type                    | Description                                                                         |
+| ------------------------------- | ----------------------- | ----------------------------------------------------------------------------------- |
+| `as_on_date`                  | `DateTime`            | Reference date (optional)                                                           |
+| `underlying_msymbols`         | `List[str]`           | Underlying master symbols (optional)                                                |
+| `underlying_ukeys`            | `List[int]`           | Underlying security keys (optional)                                                 |
+| `underlying_exchange_symbols` | `List[str]`           | Underlying exchange symbols (optional)                                              |
+| `financial_types`             | `List[FinancialType]` | Filter by instrument type e.g. `[FinancialType.EQ, FinancialType.FUT]` (optional) |
 
 ```python
 df = si.get_all_issues_for_underlying(
@@ -885,10 +954,10 @@ df = si.get_all_issues_for_underlying(
 
 #### `map_ukey_to_underlying_ukeys(data, as_on_date, financial_types)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `data` | `pd.DataFrame` | DataFrame containing ukeys to map |
-| `as_on_date` | `DateTime` | Reference date |
+| Parameter           | Type                    | Description                          |
+| ------------------- | ----------------------- | ------------------------------------ |
+| `data`            | `pd.DataFrame`        | DataFrame containing ukeys to map    |
+| `as_on_date`      | `DateTime`            | Reference date                       |
 | `financial_types` | `List[FinancialType]` | Filter by instrument type (optional) |
 
 ```python
@@ -903,8 +972,8 @@ df = si.map_ukey_to_underlying_ukeys(
 
 #### `get_ipo_dates(ukeys)`
 
-| Parameter | Type | Description |
-|---|---|---|
+| Parameter | Type          | Description           |
+| --------- | ------------- | --------------------- |
 | `ukeys` | `List[int]` | List of security keys |
 
 ```python
@@ -916,8 +985,8 @@ df = si.get_ipo_dates(ukeys=ukeys)
 
 #### `get_company_metadata(ukeys)`
 
-| Parameter | Type | Description |
-|---|---|---|
+| Parameter | Type          | Description           |
+| --------- | ------------- | --------------------- |
 | `ukeys` | `List[int]` | List of security keys |
 
 ```python
@@ -930,11 +999,11 @@ df = si.get_company_metadata(ukeys=ukeys)
 
 #### `closest_match_to_underlying_ukeys(date, names, derivatives)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date` | `DateTime` | Reference date |
-| `names` | `List[str]` | Company names to fuzzy-match |
-| `derivatives` | `bool` | Include derivative instruments (default: `False`) |
+| Parameter       | Type          | Description                                         |
+| --------------- | ------------- | --------------------------------------------------- |
+| `date`        | `DateTime`  | Reference date                                      |
+| `names`       | `List[str]` | Company names to fuzzy-match                        |
+| `derivatives` | `bool`      | Include derivative instruments (default: `False`) |
 
 ```python
 df = si.closest_match_to_underlying_ukeys(
@@ -949,9 +1018,9 @@ df = si.closest_match_to_underlying_ukeys(
 
 #### `get_active_futures_contracts_for_underlying(as_on_date, underlying_ukeys)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `as_on_date` | `DateTime` | Reference date |
+| Parameter            | Type          | Description                      |
+| -------------------- | ------------- | -------------------------------- |
+| `as_on_date`       | `DateTime`  | Reference date                   |
 | `underlying_ukeys` | `List[int]` | List of underlying security keys |
 
 ```python
@@ -969,10 +1038,10 @@ df = si.get_active_futures_contracts_for_underlying(
 
 #### `get_margin_pct(as_on_date, ukeys)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `as_on_date` | `DateTime` | Reference date |
-| `ukeys` | `List[int]` | List of security keys |
+| Parameter      | Type          | Description           |
+| -------------- | ------------- | --------------------- |
+| `as_on_date` | `DateTime`  | Reference date        |
+| `ukeys`      | `List[int]` | List of security keys |
 
 ```python
 df = si.get_margin_pct(
@@ -1017,10 +1086,10 @@ ukeys = univ[col.MSYMBOL_UKEY].tolist()
 Returns(region: str, base_url: str = None)
 ```
 
-| Parameter | Type | Description |
-|---|---|---|
-| `region` | `Region` | Region code used for business-date calendars, e.g. `"IN"` |
-| `base_url` | `str` | Optional API base URL override |
+| Parameter    | Type       | Description                                                 |
+| ------------ | ---------- | ----------------------------------------------------------- |
+| `region`   | `Region` | Region code used for business-date calendars, e.g. `"IN"` |
+| `base_url` | `str`    | Optional API base URL override                              |
 
 ### Accepted Calculation Values
 
@@ -1049,11 +1118,11 @@ ForwardReturnHorizon.FWD_1D_252D,
 
 Compounds daily total returns over the requested forward business-day horizon.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date_times` | `List[DateTime]` | Dates queried for forward return.  |
-| `horizon` | `ForwardReturnHorizon` | One of the supported forward-horizon values above |
-| `ukeys` | `List[int]` | Optional security filter; `None` or an empty list means no explicit ukey filter |
+| Parameter      | Type                     | Description                                                                       |
+| -------------- | ------------------------ | --------------------------------------------------------------------------------- |
+| `date_times` | `List[DateTime]`       | Dates queried for forward return.                                                 |
+| `horizon`    | `ForwardReturnHorizon` | One of the supported forward-horizon values above                                 |
+| `ukeys`      | `List[int]`            | Optional security filter; `None` or an empty list means no explicit ukey filter |
 
 ```python
 df = returns.forward_total_returns(
@@ -1071,12 +1140,12 @@ df = returns.forward_total_returns(
 
 Compounds security-level residual returns from the risk model over the requested business days and horizon.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date_times` | `List[DateTime]` | Dates queried for forward return. |
-| `horizon` | `ForwardReturnHorizon` | One of the supported forward-horizon values above |
-| `risk_model` | `str` | Risk model , e.g. `"INEC1"` |
-| `ukeys` | `List[int]` | Optional security filter |
+| Parameter      | Type                     | Description                                       |
+| -------------- | ------------------------ | ------------------------------------------------- |
+| `date_times` | `List[DateTime]`       | Dates queried for forward return.                 |
+| `horizon`    | `ForwardReturnHorizon` | One of the supported forward-horizon values above |
+| `risk_model` | `str`                  | Risk model , e.g. `"INEC1"`                     |
+| `ukeys`      | `List[int]`            | Optional security filter                          |
 
 ```python
 df = returns.forward_residual_returns(
@@ -1095,13 +1164,13 @@ df = returns.forward_residual_returns(
 
 Returns daily total or residual returns.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date_times` | `List[DateTime]` | Dates to query |
-| `return_type` | `ReturnType` | `ReturnType.TOTAL or ReturnType.RESIDUAL` |
-| `ukeys` | `List[int]` | Optional security filter |
-| `filter_for_fin_types` | `List[str]` | Optional financial-type filter, e.g. `[cns.COMMON_STOCK]` |
-| `risk_model` | `str` | Required when `return_type=ReturnType.RESIDUAL` |
+| Parameter                | Type               | Description                                                 |
+| ------------------------ | ------------------ | ----------------------------------------------------------- |
+| `date_times`           | `List[DateTime]` | Dates to query                                              |
+| `return_type`          | `ReturnType`     | `ReturnType.TOTAL or ReturnType.RESIDUAL`                 |
+| `ukeys`                | `List[int]`      | Optional security filter                                    |
+| `filter_for_fin_types` | `List[str]`      | Optional financial-type filter, e.g. `[cns.COMMON_STOCK]` |
+| `risk_model`           | `str`            | Required when `return_type=ReturnType.RESIDUAL`           |
 
 ```python
 df = returns.daily_returns(
@@ -1120,14 +1189,14 @@ df = returns.daily_returns(
 
 Compounds the available daily returns for each security across the business-date range using `prod(1 + return) - 1`.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `start_date` | `DateTime` | Start of the date range |
-| `end_date` | `DateTime` | End of the date range |
-| `return_type` | `ReturnType` | ``ReturnType.TOTAL or ReturnType.RESIDUAL`` |
-| `ukeys` | `List[int]` | Optional security filter |
-| `filter_for_fin_types` | `List[str]` | Optional financial-type filter |
-| `risk_model` | `str` | Required when `return_type="residual"` |
+| Parameter                | Type           | Description                                 |
+| ------------------------ | -------------- | ------------------------------------------- |
+| `start_date`           | `DateTime`   | Start of the date range                     |
+| `end_date`             | `DateTime`   | End of the date range                       |
+| `return_type`          | `ReturnType` | ``ReturnType.TOTAL or ReturnType.RESIDUAL`` |
+| `ukeys`                | `List[int]`  | Optional security filter                    |
+| `filter_for_fin_types` | `List[str]`  | Optional financial-type filter              |
+| `risk_model`           | `str`        | Required when `return_type="residual"`    |
 
 ```python
 df = returns.cumulative_returns(
@@ -1144,16 +1213,17 @@ df = returns.cumulative_returns(
 #### `category_cumulative_returns(start_date, end_date, return_type, category_col, weight_type, ukeys=None, filter_for_fin_types=None, risk_model=None)`
 
 Calculates daily weighted returns within a company-metadata category, compounds them over the date range, and maps each category result back to its securities.
-| Parameter | Type | Description |
-|---|---|---|
-| `start_date` | `DateTime` | Start of the date range |
-| `end_date` | `DateTime` | End of the date range |
-| `return_type` | `ReturnType` | `ReturnType.TOTAL` or `ReturnType.RESIDUAL` |
-| `category_col` | `str` | Company-metadata column used for grouping, e.g. `col.GICS_SECTOR` |
-| `weight_type` | `PortfolioWeights` | `PortfolioWeights.EQUAL` or `PortfolioWeights.MARKET_CAP` |
-| `ukeys` | `List[int]` | Optional security filter |
-| `filter_for_fin_types` | `List[str]` | Optional financial-type filter |
-| `risk_model` | `str` | Required when `return_type="residual"` |
+
+| Parameter                | Type                 | Description                                                         |
+| ------------------------ | -------------------- | ------------------------------------------------------------------- |
+| `start_date`           | `DateTime`         | Start of the date range                                             |
+| `end_date`             | `DateTime`         | End of the date range                                               |
+| `return_type`          | `ReturnType`       | `ReturnType.TOTAL` or `ReturnType.RESIDUAL`                     |
+| `category_col`         | `str`              | Company-metadata column used for grouping, e.g. `col.GICS_SECTOR` |
+| `weight_type`          | `PortfolioWeights` | `PortfolioWeights.EQUAL` or `PortfolioWeights.MARKET_CAP`       |
+| `ukeys`                | `List[int]`        | Optional security filter                                            |
+| `filter_for_fin_types` | `List[str]`        | Optional financial-type filter                                      |
+| `risk_model`           | `str`              | Required when `return_type="residual"`                            |
 
 ```python
 df = returns.category_cumulative_returns(
@@ -1171,13 +1241,13 @@ df = returns.category_cumulative_returns(
 
 #### `returns_rsquared(date_times, return_type, ukeys=None, filter_for_fin_types=None, risk_model=None)`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date_times` | `List[DateTime]` | Dates used to construct the return path |
-| `return_type` | `ReturnType` | `ReturnType.TOTAL` or `ReturnType.RESIDUAL` |
-| `ukeys` | `List[int]` | Optional security filter |
-| `filter_for_fin_types` | `List[str]` | Optional financial-type filter |
-| `risk_model` | `str` | Required when `return_type="residual"` |
+| Parameter                | Type               | Description                                     |
+| ------------------------ | ------------------ | ----------------------------------------------- |
+| `date_times`           | `List[DateTime]` | Dates used to construct the return path         |
+| `return_type`          | `ReturnType`     | `ReturnType.TOTAL` or `ReturnType.RESIDUAL` |
+| `ukeys`                | `List[int]`      | Optional security filter                        |
+| `filter_for_fin_types` | `List[str]`      | Optional financial-type filter                  |
+| `risk_model`           | `str`            | Required when `return_type="residual"`        |
 
 ```python
 df = returns.returns_rsquared(
@@ -1216,35 +1286,35 @@ The current implementation supports the `"INEC1"` model.
 RiskDecomposition(model_name: str, base_url: str = None)
 ```
 
-| Parameter | Type | Description |
-|---|---|---|
+| Parameter      | Type    | Description                            |
+| -------------- | ------- | -------------------------------------- |
 | `model_name` | `str` | Risk-model name, currently `"INEC1"` |
-| `base_url` | `str` | Optional API base URL override |
+| `base_url`   | `str` | Optional API base URL override         |
 
 Common date parameters use the following public types:
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date_times` | `List[DateTime]` | One or more business dates |
-| `date` | `DateTime` | single business date |
-| `wide_format` | `bool` | Return matrix-like factor columns instead of long-form records (default: `False`) |
+| Parameter       | Type               | Description                                                                         |
+| --------------- | ------------------ | ----------------------------------------------------------------------------------- |
+| `date_times`  | `List[DateTime]` | One or more business dates                                                          |
+| `date`        | `DateTime`       | single business date                                                                |
+| `wide_format` | `bool`           | Return matrix-like factor columns instead of long-form records (default: `False`) |
 
 ### Model Data Methods
 
 All methods in this table return a `pd.DataFrame`.
 
-| Method | Description | Output |
-|---|---|---|
-| `get_universe(date_times)` | Get model securities and estimation-universe membership | `[col.DATETIME, col.MSYMBOL_UKEY, col.IN_ESTU]` |
-| `get_factor_map()` | Map each factor to its Market, Style, or Industry factor type | `[col.FACTOR_TYPE, col.FACTOR_NAME]` |
+| Method                                                 | Description                                                                            | Output                                                                                            |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `get_universe(date_times)`                           | Get model securities and estimation-universe membership                                | `[col.DATETIME, col.MSYMBOL_UKEY, col.IN_ESTU]`                                                 |
+| `get_factor_map()`                                   | Map each factor to its Market, Style, or Industry factor type                          | `[col.FACTOR_TYPE, col.FACTOR_NAME]`                                                            |
 | `get_factor_loadings(date_times, wide_format=False)` | Get security factor loadings; pivot to one column per factor when `wide_format=True` | Long form: `[col.DATETIME, col.FACTOR_NAME, col.IN_ESTU, col.MSYMBOL_UKEY, col.FACTOR_LOADING]` |
-| `get_factor_returns(date_times)` | Get daily factor returns and model-fit statistics | `[col.DATETIME, col.FACTOR_NAME, col.FACTOR_RETURN, col.TSTAT, col.RSQUARED, col.ADJ_RSQUARED]` |
-| `get_residual_returns(date_times)` | Get the security-level return unexplained by the model | `[col.DATETIME, col.MSYMBOL_UKEY, col.RETURN, col.FACTOR_RETURN, col.RESIDUAL_RETURN]` |
-| `get_factor_vol(date_times)` | Get annualized factor volatility | `[col.DATETIME, col.FACTOR_NAME, col.FACTOR_VOL]` |
-| `get_factor_covariance(date_times)` | Get factor covariance in long or matrix-like wide form | Long form: `[col.DATETIME, col.FACTOR_NAME_1, col.FACTOR_NAME_2, col.FACTOR_COVARIANCE]` |
-| `get_srisk(date_times)` | Get security-specific risk used as idiosyncratic volatility | `[col.DATETIME, col.MSYMBOL_UKEY, col.SRISK]` |
-| `get_trisk(date_times)` | Get security-level total risk | `[col.DATETIME, col.MSYMBOL_UKEY, col.TRISK]` |
-| `get_beta(date_times)` | Get security-level model beta | `[col.DATETIME, col.MSYMBOL_UKEY, col.BETA]` |
+| `get_factor_returns(date_times)`                     | Get daily factor returns and model-fit statistics                                      | `[col.DATETIME, col.FACTOR_NAME, col.FACTOR_RETURN, col.TSTAT, col.RSQUARED, col.ADJ_RSQUARED]` |
+| `get_residual_returns(date_times)`                   | Get the security-level return unexplained by the model                                 | `[col.DATETIME, col.MSYMBOL_UKEY, col.RETURN, col.FACTOR_RETURN, col.RESIDUAL_RETURN]`          |
+| `get_factor_vol(date_times)`                         | Get annualized factor volatility                                                       | `[col.DATETIME, col.FACTOR_NAME, col.FACTOR_VOL]`                                               |
+| `get_factor_covariance(date_times)`                  | Get factor covariance in long or matrix-like wide form                                 | Long form: `[col.DATETIME, col.FACTOR_NAME_1, col.FACTOR_NAME_2, col.FACTOR_COVARIANCE]`        |
+| `get_srisk(date_times)`                              | Get security-specific risk used as idiosyncratic volatility                            | `[col.DATETIME, col.MSYMBOL_UKEY, col.SRISK]`                                                   |
+| `get_trisk(date_times)`                              | Get security-level total risk                                                          | `[col.DATETIME, col.MSYMBOL_UKEY, col.TRISK]`                                                   |
+| `get_beta(date_times)`                               | Get security-level model beta                                                          | `[col.DATETIME, col.MSYMBOL_UKEY, col.BETA]`                                                    |
 
 `wide_format=True` produces:
 
@@ -1267,26 +1337,26 @@ covariance = risk.get_factor_covariance(
 
 Portfolio methods accept a DataFrame which has relevant columns. Each weight record requires `col.MSYMBOL_UKEY` and `col.WEIGHT`. Calls can be more optimized by using groupby_cols which allow unique portfolios to be analyzed at once. eg:- groupby_cols=[col.DATETIME,col.PORTFOLIO_TYPE]
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date` | `DateTime` | Portfolio analysis date |
-| `weights` | `pd.DataFrame` | Security weight records |
-| `groupby_cols` | `List[str]` | Optional record fields used to calculate separate portfolios (default: `[]`) |
-| `aggregate` | `bool` | Aggregate factor exposures to portfolio/group level (default: `True`) |
+| Parameter        | Type             | Description                                                                    |
+| ---------------- | ---------------- | ------------------------------------------------------------------------------ |
+| `date`         | `DateTime`     | Portfolio analysis date                                                        |
+| `weights`      | `pd.DataFrame` | Security weight records                                                        |
+| `groupby_cols` | `List[str]`    | Optional record fields used to calculate separate portfolios (default: `[]`) |
+| `aggregate`    | `bool`         | Aggregate factor exposures to portfolio/group level (default: `True`)        |
 
 ### Portfolio Exposure and Volatility Methods
 
 The output of each grouped calculation begins with the requested `groupby_cols`.
 
-| Method | Calculation | Output after `groupby_cols` |
-|---|---|---|
-| `get_portfolio_beta(date, weights, groupby_cols=[])` | Sum of `weight * beta` | `[col.BETA]` |
-| `get_portfolio_stock_level_beta(date, weights, groupby_cols=[])` | Per-security | `[col.MSYMBOL_UKEY, col.BETA_EXP]` |
-| `get_portfolio_factor_exposures(date, weights, groupby_cols=[], aggregate=True)` | Weighted factor loadings,  | `[col.FACTOR_NAME, col.FACTOR_EXPOSURE]` when aggregated |
-| `get_portfolio_factor_vol(date, weights, groupby_cols=[])` | Factor volatility, | `[col.FACTOR_VOL]` |
-| `get_portfolio_factor_group_vol(date, weights, groupby_cols=[])` | Separate Market, Style, and Industry factor-block volatility | `[col.MARKET_VOL, col.STYLE_VOL, col.INDUSTRY_VOL]` |
-| `get_portfolio_idio_vol(date, weights, groupby_cols=[])` | Idiosyncratic volatility, | `[col.IDIO_VOL]` |
-| `get_portfolio_total_vol(date, weights, groupby_cols=[])` | Factor, factor-group, idiosyncratic, and total volatility | `[col.FACTOR_VOL, col.MARKET_VOL, col.STYLE_VOL, col.INDUSTRY_VOL, col.IDIO_VOL, col.TOTAL_VOL]` |
+| Method                                                                             | Calculation                                                  | Output after `groupby_cols`                                                                      |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `get_portfolio_beta(date, weights, groupby_cols=[])`                             | Sum of `weight * beta`                                     | `[col.BETA]`                                                                                     |
+| `get_portfolio_stock_level_beta(date, weights, groupby_cols=[])`                 | Per-security                                                 | `[col.MSYMBOL_UKEY, col.BETA_EXP]`                                                               |
+| `get_portfolio_factor_exposures(date, weights, groupby_cols=[], aggregate=True)` | Weighted factor loadings,                                    | `[col.FACTOR_NAME, col.FACTOR_EXPOSURE]` when aggregated                                         |
+| `get_portfolio_factor_vol(date, weights, groupby_cols=[])`                       | Factor volatility,                                           | `[col.FACTOR_VOL]`                                                                               |
+| `get_portfolio_factor_group_vol(date, weights, groupby_cols=[])`                 | Separate Market, Style, and Industry factor-block volatility | `[col.MARKET_VOL, col.STYLE_VOL, col.INDUSTRY_VOL]`                                              |
+| `get_portfolio_idio_vol(date, weights, groupby_cols=[])`                         | Idiosyncratic volatility,                                    | `[col.IDIO_VOL]`                                                                                 |
+| `get_portfolio_total_vol(date, weights, groupby_cols=[])`                        | Factor, factor-group, idiosyncratic, and total volatility    | `[col.FACTOR_VOL, col.MARKET_VOL, col.STYLE_VOL, col.INDUSTRY_VOL, col.IDIO_VOL, col.TOTAL_VOL]` |
 
 ```python
 portfolio_risk = risk.get_portfolio_total_vol(
@@ -1301,13 +1371,13 @@ portfolio_risk = risk.get_portfolio_total_vol(
 
 ### Variance Attribution and P&L Methods
 
-| Method | Description | Output after `groupby_cols` |
-|---|---|---|
-| `get_portfolio_marginal_idio_var_contribution(date, weights, groupby_cols=[])` | Per-security idiosyncratic variance and its share of group idiosyncratic variance | `[col.MSYMBOL_UKEY, col.WEIGHT, col.MARGINAL_IDIO_VAR, col.MARGINAL_IDIO_VAR_CONTRIB]` |
-| `get_portfolio_marginal_factor_var_contribution(date, weights, groupby_cols=[])` | Per-factor marginal variance and its share of total factor variance | `[col.FACTOR_NAME, col.MARGINAL_FACTOR_VAR, col.MARGINAL_FACTOR_VAR_CONTRIB]` |
-| `get_portfolio_marginal_stock_level_factor_var_contribution(date, weights, groupby_cols=[])` | Per-security, per-factor marginal factor variance | `[col.MSYMBOL_UKEY, col.FACTOR_NAME, col.MARGINAL_FACTOR_VAR]` |
-| `get_portfolio_marginal_total_var_contribution(date, weights, groupby_cols=[])` | Per-security factor-group, idiosyncratic, and total variance attribution | See the expanded schema below |
-| `get_portfolio_stock_level_risk_model_pnl(date, weights, groupby_cols=[])` | Same-date weighted residual and factor P&L, with factor P&L split by type | `[col.MSYMBOL_UKEY, col.RESIDUAL_PNL, col.FACTOR_PNL, col.MARKET_PNL, col.STYLE_PNL, col.INDUSTRY_PNL]` |
+| Method                                                                                         | Description                                                                       | Output after `groupby_cols`                                                                             |
+| ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `get_portfolio_marginal_idio_var_contribution(date, weights, groupby_cols=[])`               | Per-security idiosyncratic variance and its share of group idiosyncratic variance | `[col.MSYMBOL_UKEY, col.WEIGHT, col.MARGINAL_IDIO_VAR, col.MARGINAL_IDIO_VAR_CONTRIB]`                  |
+| `get_portfolio_marginal_factor_var_contribution(date, weights, groupby_cols=[])`             | Per-factor marginal variance and its share of total factor variance               | `[col.FACTOR_NAME, col.MARGINAL_FACTOR_VAR, col.MARGINAL_FACTOR_VAR_CONTRIB]`                           |
+| `get_portfolio_marginal_stock_level_factor_var_contribution(date, weights, groupby_cols=[])` | Per-security, per-factor marginal factor variance                                 | `[col.MSYMBOL_UKEY, col.FACTOR_NAME, col.MARGINAL_FACTOR_VAR]`                                          |
+| `get_portfolio_marginal_total_var_contribution(date, weights, groupby_cols=[])`              | Per-security factor-group, idiosyncratic, and total variance attribution          | See the expanded schema below                                                                             |
+| `get_portfolio_stock_level_risk_model_pnl(date, weights, groupby_cols=[])`                   | Same-date weighted residual and factor P&L, with factor P&L split by type         | `[col.MSYMBOL_UKEY, col.RESIDUAL_PNL, col.FACTOR_PNL, col.MARKET_PNL, col.STYLE_PNL, col.INDUSTRY_PNL]` |
 
 `get_portfolio_marginal_total_var_contribution` returns:
 
@@ -1336,11 +1406,11 @@ contributions = risk.get_portfolio_marginal_total_var_contribution(
 
 Builds a long-only, fully invested portfolio whose securities have approximately equal total-risk contributions.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `date` | `DateTime` | Portfolio construction date |
-| `ukeys` | `List[int]` | Candidate security keys |
-| `risk_type` | `str` | Risk objective; `"total"`|
+| Parameter     | Type          | Description                 |
+| ------------- | ------------- | --------------------------- |
+| `date`      | `DateTime`  | Portfolio construction date |
+| `ukeys`     | `List[int]` | Candidate security keys     |
+| `risk_type` | `str`       | Risk objective; `"total"` |
 
 ```python
 equal_risk_weights = risk.build_equal_risk_portfolio(
@@ -1375,8 +1445,8 @@ Input DataFrames are serialized as records and returned transformations are reco
 StatHelpers(base_url: str = None)
 ```
 
-| Parameter | Type | Description |
-|---|---|---|
+| Parameter    | Type    | Description                    |
+| ------------ | ------- | ------------------------------ |
 | `base_url` | `str` | Optional API base URL override |
 
 ### Methods
@@ -1389,11 +1459,11 @@ Returns the scaled median absolute deviation:
 scale * median(abs(x - median(x)))
 ```
 
-| Parameter | Type | Description |
-|---|---|---|
-| `data` | `pd.DataFrame` | Input records |
-| `col_to_winsorize` | `str` | Numeric column used for the calculation |
-| `scale` | `float` | MAD scale factor (default: `1.4826`) |
+| Parameter            | Type             | Description                             |
+| -------------------- | ---------------- | --------------------------------------- |
+| `data`             | `pd.DataFrame` | Input records                           |
+| `col_to_winsorize` | `str`          | Numeric column used for the calculation |
+| `scale`            | `float`        | MAD scale factor (default: `1.4826`)  |
 
 ```python
 data = pd.DataFrame({"score": [1.0, 2.0, 3.0, 100.0]})
@@ -1415,12 +1485,12 @@ MAD uses a direct median calculation; remove or fill missing target values first
 
 Clips the target column to `median +/- num_stdev * scaled_MAD`.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `data` | `pd.DataFrame` | Input records |
-| `col_to_winsorize` | `str` | Numeric column to clip |
-| `num_stdev` | `float` | Number of scaled MADs used for each bound (default: `3.0`) |
-| `remove_zeros` | `bool` | Exclude zeros when estimating the median and MAD (default: `True`) |
+| Parameter            | Type             | Description                                                          |
+| -------------------- | ---------------- | -------------------------------------------------------------------- |
+| `data`             | `pd.DataFrame` | Input records                                                        |
+| `col_to_winsorize` | `str`          | Numeric column to clip                                               |
+| `num_stdev`        | `float`        | Number of scaled MADs used for each bound (default: `3.0`)         |
+| `remove_zeros`     | `bool`         | Exclude zeros when estimating the median and MAD (default: `True`) |
 
 ```python
 winsorized = StatHelpers().winsorize_by_mad(
@@ -1473,14 +1543,14 @@ The optional filter and `remove_zeros` restrict only the rows used to estimate b
 
 Standardizes a score as `(value - mean) / sample_standard_deviation`.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `data` | `pd.DataFrame` | Input records |
-| `date` | `str` | Date used when market-cap data is required |
-| `col_to_standardize` | `str` | Numeric column to standardize |
-| `remove_zeros` | `bool` | Exclude zeros from moment estimation and leave zero positions unchanged (default: `True`) |
-| `market_cap_weighted_mean` | `bool` | Use a market-cap-weighted mean (default: `False`) |
-| `estu_filter` | `bool` | Estimate moments using only rows where `col.IN_ESTU` is `True` (default: `False`) |
+| Parameter                    | Type             | Description                                                                                 |
+| ---------------------------- | ---------------- | ------------------------------------------------------------------------------------------- |
+| `data`                     | `pd.DataFrame` | Input records                                                                               |
+| `date`                     | `str`          | Date used when market-cap data is required                                                  |
+| `col_to_standardize`       | `str`          | Numeric column to standardize                                                               |
+| `remove_zeros`             | `bool`         | Exclude zeros from moment estimation and leave zero positions unchanged (default: `True`) |
+| `market_cap_weighted_mean` | `bool`         | Use a market-cap-weighted mean (default: `False`)                                         |
+| `estu_filter`              | `bool`         | Estimate moments using only rows where `col.IN_ESTU` is `True` (default: `False`)     |
 
 ```python
 scores = pd.DataFrame({
@@ -1509,11 +1579,11 @@ standardized = StatHelpers().standardize_scores(
 
 Computes Spearman rank correlation and its p-value, omitting missing pairs.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `data` | `pd.DataFrame` | Input observations |
-| `col_x` | `str` | First numeric column |
-| `col_y` | `str` | Second numeric column |
+| Parameter | Type             | Description           |
+| --------- | ---------------- | --------------------- |
+| `data`  | `pd.DataFrame` | Input observations    |
+| `col_x` | `str`          | First numeric column  |
+| `col_y` | `str`          | Second numeric column |
 
 ```python
 correlation_data = pd.DataFrame({
@@ -1529,19 +1599,17 @@ result = StatHelpers().spearman_rank_correlation(
 # returns pd.DataFrame -> [col.CORRELATION, col.P_VALUE]
 ```
 
-
-
 ---
 
 #### `pearson_rank_correlation(data, col_x, col_y)`
 
 Computes the Pearson product-moment correlation coefficient.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `data` | `pd.DataFrame` | Input observations |
-| `col_x` | `str` | First numeric column |
-| `col_y` | `str` | Second numeric column |
+| Parameter | Type             | Description           |
+| --------- | ---------------- | --------------------- |
+| `data`  | `pd.DataFrame` | Input observations    |
+| `col_x` | `str`          | First numeric column  |
+| `col_y` | `str`          | Second numeric column |
 
 ```python
 correlation_data = pd.DataFrame({
@@ -1569,11 +1637,11 @@ lhs = intercept + beta * rhs + error
 
 The method does not convert either input to a growth rate; callers must supply the intended transformed values.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `data` | `pd.DataFrame` | Regression observations |
-| `lhs_col` | `str` | Dependent-variable column |
-| `rhs_col` | `str` | Independent-variable column |
+| Parameter   | Type             | Description                 |
+| ----------- | ---------------- | --------------------------- |
+| `data`    | `pd.DataFrame` | Regression observations     |
+| `lhs_col` | `str`          | Dependent-variable column   |
+| `rhs_col` | `str`          | Independent-variable column |
 
 ```python
 regression_data = pd.DataFrame({
@@ -1588,6 +1656,83 @@ result = StatHelpers().growth_rate_regression(
 )
 # returns pd.DataFrame -> [col.BETA, col.LHS_AVERAGE]
 ```
+
+---
+
+## MFData
+
+Access mutual fund scheme metadata, NAVs, returns, holdings, AUM, benchmarks, expenses, and trades through the MF data API.
+
+```python
+from mtech import MFData
+from mtech import DateTime
+from mtech.enums import MFPlanType, MFOptionType, MFDistributionType
+
+mf = MFData()
+date = DateTime("20240628")
+```
+
+### Scheme and Fund Discovery
+
+| Method                                                                                                      | Parameters                                                                      | Returns          | Description                                      |
+| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ---------------- | ------------------------------------------------ |
+| `get_scheme_master_data()`                                                                                | —                                                                              | `pd.DataFrame` | Retrieve scheme master data                      |
+| `get_all_fund_schemes()`                                                                                  | —                                                                              | `pd.DataFrame` | Retrieve all fund-scheme combinations            |
+| `get_all_funds(short_name=False)`                                                                         | `short_name: bool`                                                            | `List[str]`    | Get all fund names, optionally using short names |
+| `get_all_categories()`                                                                                    | —                                                                              | `List[str]`    | Get all scheme categories                        |
+| `get_all_schemes_for_fund(fund_name, curr_scheme_flag=True, short_fund_name=False)`                       | `fund_name: str`, `curr_scheme_flag: bool`, `short_fund_name: bool`       | `pd.DataFrame` | Get schemes belonging to a fund                  |
+| `get_all_fund_schemes_for_scheme_category(scheme_category, curr_scheme_flag=True, short_fund_name=False)` | `scheme_category: str`, `curr_scheme_flag: bool`, `short_fund_name: bool` | `pd.DataFrame` | Get fund-scheme combinations for a category      |
+
+### Scheme Metadata and Benchmarks
+
+| Method                                                                                          | Parameters                                                                                                       | Returns          | Description                                  |
+| ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------- | -------------------------------------------- |
+| `get_scheme_meta_data(fund_scheme_names=[], override_amfi_codes=[])`                          | `fund_scheme_names: List[Tuple[str, str]]`, `override_amfi_codes: List[int]`                                 | `pd.DataFrame` | Retrieve scheme metadata                     |
+| `get_scheme_benchmark_details(fund_scheme_names, override_amfi_codes=[])`                     | `fund_scheme_names: List[Tuple[str, str]]`, `override_amfi_codes: List[int]`                                 | `pd.DataFrame` | Retrieve benchmark details for schemes       |
+| `get_scheme_benchmark_constituents(date, fund_scheme_names, override_amfi_codes=[])`          | `date: DateTime`, `fund_scheme_names: List[Tuple[str, str]]`, `override_amfi_codes: List[int]`             | `pd.DataFrame` | Retrieve benchmark constituents as of a date |
+| `get_scheme_benchmark_daily_returns(date_times, fund_scheme_names, override_amfi_codes=None)` | `date_times: List[DateTime]`, `fund_scheme_names: List[Tuple[str, str]]`, `override_amfi_codes: List[int]` | `pd.DataFrame` | Retrieve daily benchmark returns             |
+
+`fund_scheme_names` is a list of `(fund_name, scheme_name)` tuples. `override_amfi_codes` can be used to query by AMFI scheme codes.
+
+### NAV and Returns
+
+The NAV and return methods accept scheme filters and plan/option/distribution filters. The defaults are direct plan, growth option, and not-applicable distribution type.
+
+| Method                                                                                                                                                                                                                           | Parameters                                                                              | Returns          | Description                                                |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------- | ---------------------------------------------------------- |
+| `get_nav(date_times, fund_scheme_names=[], plan_types=[MFPlanType.DIRECT], option_types=[MFOptionType.GROWTH], distribution_types=[MFDistributionType.NOT_APPLICABLE], override_amfi_codes=[])`                                | Dates, optional scheme tuples, plan/option/distribution types, optional AMFI codes      | `pd.DataFrame` | Retrieve NAV observations                                  |
+| `get_daily_returns(date_times, fund_scheme_names=[], plan_types=[MFPlanType.DIRECT], option_types=[MFOptionType.GROWTH], distribution_types=[MFDistributionType.NOT_APPLICABLE], override_amfi_codes=[])`                      | Same filters as `get_nav`                                                             | `pd.DataFrame` | Retrieve daily scheme returns                              |
+| `get_cumulative_daily_returns(start_date, end_date, fund_scheme_names=[], plan_types=[MFPlanType.DIRECT], option_types=[MFOptionType.GROWTH], distribution_types=[MFDistributionType.NOT_APPLICABLE], override_amfi_codes=[])` | `start_date: DateTime`, `end_date: DateTime`, plus scheme and plan filters          | `pd.DataFrame` | Retrieve cumulative daily scheme returns over a date range |
+| `get_cumulative_daily_benchmark_returns(start_date, end_date, fund_scheme_names=[], override_amfi_codes=[])`                                                                                                                   | `start_date: DateTime`, `end_date: DateTime`, optional scheme tuples and AMFI codes | `pd.DataFrame` | Retrieve cumulative benchmark returns over a date range    |
+
+```python
+nav = mf.get_nav(
+    date_times=[date],
+    fund_scheme_names=[("Axis Asset Management", "Large Cap Fund")],
+)
+returns = mf.get_daily_returns(date_times=[date])
+```
+
+### Holdings, AUM, Expenses, and Trades
+
+| Method                                                                                                                                                                      | Parameters                                                                                    | Returns          | Description                         |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------- | ----------------------------------- |
+| `get_holdings(date_times, fund_scheme_names=[], override_amfi_codes=[], curr_scheme_flag=True, aggregate=False, use_original_company_names=False, short_fund_name=False)` | Dates, optional scheme tuples/AMFI codes, current-scheme flag, aggregation and naming options | `pd.DataFrame` | Retrieve scheme holdings            |
+| `get_active_holdings(date_times, fund_scheme_names=[], override_amfi_codes=[], curr_scheme_flag=True, aggregate=False)`                                                   | Dates, optional scheme tuples/AMFI codes, current-scheme flag and aggregation option          | `pd.DataFrame` | Retrieve active holdings            |
+| `get_fund_scheme_aum(date_times, fund_scheme_names=[], override_amfi_codes=[], curr_scheme_flag=True)`                                                                    | Dates, optional scheme tuples/AMFI codes and current-scheme flag                              | `pd.DataFrame` | Retrieve fund-scheme AUM            |
+| `get_expense_ratio_data(date_times, fund_scheme_names=[], override_amfi_codes=[])`                                                                                        | Dates, optional scheme tuples and AMFI codes                                                  | `pd.DataFrame` | Retrieve expense-ratio data         |
+| `get_trades(date_times, fund_scheme_names=[], override_amfi_codes=[], curr_scheme_flag=True, aggregate=False)`                                                            | Dates, optional scheme tuples/AMFI codes, current-scheme flag and aggregation option          | `pd.DataFrame` | Retrieve scheme trades              |
+| `get_scheme_start_end_dates(fund_scheme_names=[], override_amfi_codes=[], curr_scheme_flag=True, short_fund_name=False)`                                                  | Optional scheme tuples/AMFI codes, current-scheme flag and short-name option                  | `pd.DataFrame` | Retrieve scheme start and end dates |
+
+### Usage Notes
+
+- `date_times` is a list of `DateTime` objects.
+- `fund_scheme_names` is a list of `(fund_name, scheme_name)` tuples.
+- `override_amfi_codes` is a list of integer AMFI scheme codes.
+- Methods that accept `curr_scheme_flag` can filter to current schemes when it is `True`.
+- Methods that accept `aggregate` provide an option to aggregate the returned holdings, active holdings, or trades.
+- The methods return either a `pd.DataFrame` or, for fund/category name lists, a `List[str]`.
+
 ---
 
 ## Constants & Columns
@@ -1618,16 +1763,17 @@ from mtech.enums import FinancialReportPeriod
 from mtech.enums import FinancialReportMetric
 from mtech.enums import FinancialType
 from mtech.enums import UniverseType
+from mtech.enums import FuturesTerm
 ```
 
 ### `VOLUME_TYPE`
 
 Used in `MarketData` volume methods.
 
-| Value | Description |
-|---|---|
+| Value                                 | Description                                    |
+| ------------------------------------- | ---------------------------------------------- |
 | `VOLUME_TYPE.MULTI_EXCHANGE_VOLUME` | Combined volume across all exchanges (default) |
-| `VOLUME_TYPE.EXCHANGE_VOLUME` | Volume on the primary exchange only |
+| `VOLUME_TYPE.EXCHANGE_VOLUME`       | Volume on the primary exchange only            |
 
 ---
 
@@ -1635,11 +1781,11 @@ Used in `MarketData` volume methods.
 
 Used in `CorporateData` financial statement methods.
 
-| Value | Description |
-|---|---|
+| Value                                    | Description             |
+| ---------------------------------------- | ----------------------- |
 | `FinancialReportType.INCOME_STATEMENT` | Profit & Loss statement |
-| `FinancialReportType.BALANCE_SHEET` | Balance sheet |
-| `FinancialReportType.CASH_FLOW` | Cash flow statement |
+| `FinancialReportType.BALANCE_SHEET`    | Balance sheet           |
+| `FinancialReportType.CASH_FLOW`        | Cash flow statement     |
 
 ---
 
@@ -1647,10 +1793,10 @@ Used in `CorporateData` financial statement methods.
 
 Used in `CorporateData` financial statement methods.
 
-| Value | Description |
-|---|---|
+| Value                               | Description      |
+| ----------------------------------- | ---------------- |
 | `FinancialReportPeriod.QUARTERLY` | Quarterly report |
-| `FinancialReportPeriod.ANNUAL` | Annual report |
+| `FinancialReportPeriod.ANNUAL`    | Annual report    |
 
 ---
 
@@ -1664,11 +1810,11 @@ Used in `CorporateData` financial statement methods.
 
 Used in `SecurityInfo` methods to filter by instrument type.
 
-| Value | Description |
-|---|---|
-| `FinancialType.EQ` | Equity / common stock |
-| `FinancialType.FUT` | Futures contract |
-| `FinancialType.OPT` | Options contract |
+| Value                 | Description           |
+| --------------------- | --------------------- |
+| `FinancialType.EQ`  | Equity / common stock |
+| `FinancialType.FUT` | Futures contract      |
+| `FinancialType.OPT` | Options contract      |
 
 ---
 
@@ -1676,12 +1822,11 @@ Used in `SecurityInfo` methods to filter by instrument type.
 
 Used in `Universe.get_universe()`.
 
-
 ### 'ReturnType'
 
 Used in 'Returns' methods to get total or residual returns.
 
-| Value | Description |
-|---|---|
-| `ReturnType.TOTAL` | Total Returns |
+| Value                   | Description      |
+| ----------------------- | ---------------- |
+| `ReturnType.TOTAL`    | Total Returns    |
 | `ReturnType.RESIDUAL` | Residual Returns |
