@@ -16,7 +16,7 @@ import shutil
 import boto3
 import os
 import io
-
+from typing import List, Optional
 
 class AbstractFactor(ABC):
 
@@ -64,8 +64,26 @@ class AbstractFactor(ABC):
         print(f"Saved locally: {file_path}")
 
 
-    def backfill(self, sdate: DateTime, edate: DateTime,force_query: bool = True,max_tries: int = 3):
-        dates = DateUtils().get_busdate_range(sdate, edate, self._region)
+    def backfill(
+        self,
+        sdate: Optional[DateTime] = None,
+        edate: Optional[DateTime] = None,
+        dates: Optional[List[DateTime]] = None,
+        force_query: bool = True,
+        max_tries: int = 3,
+    ):
+        # Either pass sdate + edate (business-day range) or an explicit list of dates
+        if dates is not None:
+            if sdate is not None or edate is not None:
+                raise ValueError("Pass either sdate/edate or dates, not both")
+            if len(dates) == 0:
+                raise ValueError("dates must not be empty")
+            dates = sorted(set(dates))
+            sdate, edate = dates[0], dates[-1]
+        elif sdate is not None and edate is not None:
+            dates = DateUtils().get_busdate_range(sdate, edate, self._region)
+        else:
+            raise ValueError("Pass both sdate and edate, or dates")
 
         USER_ID = os.environ.get('USER_ID')
         BUCKET = os.environ.get('S3_BUCKET')
